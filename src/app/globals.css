@@ -128,3 +128,227 @@
     @apply font-sans;
   }
 }
+
+/* ============================================================
+   SPEED LINE ANIMATION
+   ============================================================ */
+@keyframes speedLine {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(200%); opacity: 0; }
+}
+
+.speed-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.5), transparent);
+  animation: speedLine 3s linear infinite;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.speed-line-orange {
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 0, 0.45), transparent);
+}
+
+/* ============================================================
+   HERO PAGE
+   ============================================================ */
+.hero-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.hero-title {
+  font-size: clamp(56px, 8vw, 92px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 18px;
+}
+
+.hero-title-type {
+  display: block;
+  color: #00d4ff;
+  text-shadow: 0 0 50px rgba(0, 212, 255, 0.55), 0 0 100px rgba(0, 212, 255, 0.25);
+}
+
+.hero-title-racing {
+  display: block;
+  color: #ff6b00;
+  text-shadow: 0 0 50px rgba(255, 107, 0, 0.55), 0 0 100px rgba(255, 107, 0, 0.25);
+}
+
+.hero-subtitle {
+  font-size: 21px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 14px;
+}
+
+.hero-desc {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.75;
+  margin-bottom: 36px;
+  max-width: 420px;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary-neon {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #ff6b00, #ff9d00);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  box-shadow: 0 0 32px rgba(255, 107, 0, 0.5);
+  transition: box-shadow 0.2s;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary-neon:hover {
+  box-shadow: 0 0 52px rgba(255, 107, 0, 0.75);
+}
+
+.btn-secondary-neon {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 212, 255, 0.07);
+  border: 2px solid rgba(0, 212, 255, 0.5);
+  color: #00d4ff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.btn-secondary-neon:hover {
+  background: rgba(0, 212, 255, 0.14);
+}
+
+/* ============================================================
+   FEATURE BADGES
+   ============================================================ */
+.feature-badge {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.35;
+}
+
+.feature-badge-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   NEON HEADER (used by race page + other non-hero pages)
+   ============================================================ */
+.header-neon {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(5, 9, 26, 0.8);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.header-neon-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-neon-logo {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+.header-neon-logo span:first-child { color: #00d4ff; }
+.header-neon-logo span:last-child  { color: #ff6b00; }
+
+.header-neon-nav {
+  display: flex;
+  gap: 28px;
+}
+.header-neon-nav a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.header-neon-nav a:hover { color: #fff; }
+
+.header-neon-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-ghost-neon {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+  padding: 0;
+}
+.btn-ghost-neon:hover { color: #fff; }
+
+.btn-outline-cyan {
+  background: none;
+  border: 2px solid #00d4ff;
+  color: #00d4ff;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-outline-cyan:hover {
+  background: rgba(0, 212, 255, 0.1);
+}

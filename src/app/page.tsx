@@ -1,65 +1,101 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <section className="relative min-h-screen overflow-hidden bg-[#05091a]">
+
+      {/* ── Background image ───────────────────────────── */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/hero.png')" }}
+      />
+
+      {/* ── Left-to-right gradient overlay ─────────────── */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(100deg, rgba(5,9,26,0.97) 0%, rgba(5,9,26,0.90) 25%, rgba(5,9,26,0.60) 50%, rgba(5,9,26,0.15) 70%, transparent 88%)",
+        }}
+      />
+
+      {/* ── Animated speed lines ────────────────────────── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="speed-line" style={{ top: "32%", width: "55%", animationDelay: "0s", animationDuration: "2.8s" }} />
+        <div className="speed-line speed-line-orange" style={{ top: "41%", width: "40%", animationDelay: "1.1s", animationDuration: "3.3s" }} />
+        <div className="speed-line" style={{ top: "53%", width: "62%", animationDelay: "1.9s", animationDuration: "2.2s" }} />
+        <div className="speed-line speed-line-orange" style={{ top: "63%", width: "45%", animationDelay: "0.6s", animationDuration: "3.7s" }} />
+      </div>
+
+      {/* ── Floating navigation ─────────────────────────── */}
+      <header
+        className="absolute top-0 left-0 right-0 z-20"
+        style={{
+          background: "rgba(5,9,26,0.65)",
+          borderBottom: "1px solid rgba(0,212,255,0.15)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
+      >
+        <div className="flex items-center justify-between px-12 py-[18px] max-w-[1400px] mx-auto">
+          <Link href="/" className="header-neon-logo">
+            <span>TYPE</span>
+            <span>RACER</span>
+          </Link>
+          <nav className="header-neon-nav">
+            <Link href="/">Races</Link>
+            <Link href="/">Leaderboard</Link>
+            <Link href="/">About</Link>
+          </nav>
+          <div className="header-neon-actions">
+            <Link href="/admin/login" className="btn-ghost-neon">Login</Link>
+            <Link href="/" className="btn-outline-cyan">View Races</Link>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Hero text content ────────────────────────────── */}
+      <div className="relative z-10 flex items-center min-h-screen">
+        <div className="px-12 pt-24 pb-16 max-w-[580px]">
+
+          <p className="hero-eyebrow">Master the keyboard. Ace the race.</p>
+
+          <h1 className="hero-title">
+            <span className="hero-title-type">TYPE</span>
+            <span className="hero-title-racing">RACING</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <h2 className="hero-subtitle">The Ultimate Competitive Typing Game</h2>
+
+          <p className="hero-desc">
+            Type fast, compete globally, and climb the leaderboard in the
+            world&apos;s fastest typing racer. Are you ready to type your way
+            to the finish line?
           </p>
+
+          <div className="flex gap-4 flex-wrap mb-12">
+            <Link href="/" className="btn-primary-neon">Play for Free Now</Link>
+            <Link href="/" className="btn-secondary-neon">Browse Races</Link>
+          </div>
+
+          <div className="flex gap-6 flex-wrap">
+            <div className="feature-badge">
+              <div className="feature-badge-icon">⚡</div>
+              <div>Live<br />Races</div>
+            </div>
+            <div className="feature-badge">
+              <div className="feature-badge-icon">🏆</div>
+              <div>Real-time<br />Progress</div>
+            </div>
+            <div className="feature-badge">
+              <div className="feature-badge-icon">🌐</div>
+              <div>Global<br />Players</div>
+            </div>
+          </div>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+
+    </section>
   );
 }
