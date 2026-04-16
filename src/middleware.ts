@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("better-auth.session_token");
   const isLoginPage = request.nextUrl.pathname === "/admin/login";
 
+  // Redirect unauthenticated users to login
   if (!sessionCookie && !isLoginPage) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
+  // Redirect authenticated users away from login page
   if (sessionCookie && isLoginPage) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
