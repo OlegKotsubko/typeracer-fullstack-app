@@ -33,6 +33,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} h-full antialiased dark`}
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">
         {children}

@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -42,7 +43,11 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm">
+      <div className="w-full max-w-sm flex flex-col gap-6">
+        <Link href="/" className="text-2xl font-bold tracking-tight text-center">
+          TypeRacer
+        </Link>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Admin Login</CardTitle>
           <CardDescription>
@@ -78,6 +83,7 @@ export default function AdminLoginPage() {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

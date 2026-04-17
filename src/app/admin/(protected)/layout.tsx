@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
+import { LogoutButton } from "@/components/admin/logout-button";
 
 export default async function AdminProtectedLayout({
   children,
@@ -14,8 +15,8 @@ export default async function AdminProtectedLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 border-r bg-muted/30 p-6">
-        <Link href="/admin" className="text-xl font-bold tracking-tight">
+      <aside className="w-64 border-r bg-muted/30 p-6 flex flex-col">
+        <Link href="/" className="text-xl font-bold tracking-tight">
           TypeRacer
         </Link>
         <p className="text-xs text-muted-foreground mb-6">Admin Panel</p>
@@ -33,6 +34,9 @@ export default async function AdminProtectedLayout({
             Races
           </Link>
         </nav>
+        <div className="mt-auto pt-6">
+          <LogoutButton />
+        </div>
       </aside>
       <main className="flex-1 p-8">{children}</main>
     </div>
