@@ -58,7 +58,7 @@ export default async function HomePage() {
             WebkitBackdropFilter: "blur(12px)",
           }}
         >
-          <div className="flex items-center justify-between px-12 py-[18px] max-w-[1400px] mx-auto">
+          <div className="flex items-center justify-between px-12 py-4.5 max-w-350 mx-auto">
             <Link href="/" className="header-neon-logo">
               <span>TYPE</span>
               <span>RACER</span>
@@ -71,7 +71,7 @@ export default async function HomePage() {
 
         {/* ── Hero text content ────────────────────────────── */}
         <div className="relative z-10 flex items-center min-h-screen">
-          <div className="px-12 pt-24 pb-16 max-w-[580px]">
+          <div className="px-12 pt-24 pb-16 max-w-145">
 
             <p className="hero-eyebrow">Master the keyboard. Ace the race.</p>
 
@@ -131,7 +131,7 @@ export default async function HomePage() {
                   <span>{race.participantCount} racer{race.participantCount !== 1 ? "s" : ""}</span>
                 </div>
                 <p className="race-card-preview">{race.text}</p>
-                <div className="btn-secondary-neon" style={{ marginTop: "auto", textAlign: "center", padding: "8px 0" }}>
+                <div className="btn-ghost-neon" style={{ marginTop: "auto", textAlign: "center", padding: "8px 0" }}>
                   Join Race →
                 </div>
               </Link>

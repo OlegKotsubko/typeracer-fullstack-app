@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { races, participants } from "@/db/schema";
-import { eq, count } from "drizzle-orm";
+import { count } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
