@@ -16,8 +16,9 @@ export default async function AdminProtectedLayout({
   return (
     <div className="flex min-h-screen">
       <aside className="w-64 border-r bg-muted/30 p-6 flex flex-col">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          TypeRacer
+        <Link href="/" className="header-neon-logo">
+          <span>TYPE</span>
+          <span>RACER</span>
         </Link>
         <p className="text-xs text-muted-foreground mb-6">Admin Panel</p>
         <nav className="flex flex-col gap-2">
@@ -32,6 +33,12 @@ export default async function AdminProtectedLayout({
             className="text-sm px-3 py-2 rounded-md hover:bg-muted transition-colors"
           >
             Races
+          </Link>
+          <Link
+            href="/"
+            className="text-sm px-3 py-2 rounded-md hover:bg-muted transition-colors"
+          >
+            Go to Main Page
           </Link>
         </nav>
         <div className="mt-auto pt-6">

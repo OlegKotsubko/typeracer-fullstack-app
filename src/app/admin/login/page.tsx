@@ -44,8 +44,9 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm flex flex-col gap-6">
-        <Link href="/" className="text-2xl font-bold tracking-tight text-center">
-          TypeRacer
+        <Link href="/" className="header-neon-logo text-2xl font-bold tracking-tight text-center">
+          <span>Type</span>
+          <span>Racer</span>
         </Link>
       <Card className="w-full">
         <CardHeader>
