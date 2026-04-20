@@ -105,13 +105,15 @@ export default function CreateRacePage() {
                 </SelectContent>
               </Select>
             </div>
-            <TimePicker
-              label="Duration"
-              minutes={durationMinutes}
-              seconds={durationSeconds}
-              onMinutesChange={setDurationMinutes}
-              onSecondsChange={setDurationSeconds}
-            />
+            <div title="How long participants have to complete the race" className="cursor-help">
+              <TimePicker
+                label="Duration"
+                minutes={durationMinutes}
+                seconds={durationSeconds}
+                onMinutesChange={setDurationMinutes}
+                onSecondsChange={setDurationSeconds}
+              />
+            </div>
             <Button type="submit" disabled={loading}>
               {loading ? "Creating..." : "Create Race"}
             </Button>

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { title, text, status } = body;
+  const { title, text, status, durationSeconds } = body;
 
   if (!title || !text) {
     return NextResponse.json(
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
   const [race] = await db
     .insert(races)
-    .values({ title, text, status: status ?? "draft" })
+    .values({ title, text, status: status ?? "draft", durationSeconds })
     .returning();
 
   return NextResponse.json(race, { status: 201 });
