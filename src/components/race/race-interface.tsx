@@ -62,7 +62,7 @@ export function RaceInterface({
     const sendLeave = (keepalive: boolean) => {
       if (hasSentLeave) return;
       hasSentLeave = true;
-      fetch(deleteUrl, { method: "DELETE", keepalive });
+      fetch(deleteUrl, { method: "DELETE", keepalive }).catch(() => {});
     };
 
     const handlePageHide = (event: PageTransitionEvent) => {
@@ -156,7 +156,7 @@ export function RaceInterface({
           )}
           {timeExpired && (
             <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-              Time's up! Race has ended.
+              Time&apos;s up! Race has ended.
             </div>
           )}
           <ProgressPanel
