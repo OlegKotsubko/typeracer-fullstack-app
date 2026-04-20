@@ -69,3 +69,27 @@ export async function PATCH(
 
   return NextResponse.json(updated);
 }
+
+export async function DELETE(
+  _request: Request,
+  {
+    params,
+  }: { params: Promise<{ id: string; participantId: string }> }
+) {
+  const { id: raceId, participantId } = await params;
+
+  const [race] = await db
+    .select()
+    .from(races)
+    .where(eq(races.id, raceId));
+
+  if (!race || race.status !== "active") {
+    return new NextResponse(null, { status: 404 });
+  }
+
+  await db
+    .delete(participants)
+    .where(eq(participants.id, participantId));
+
+  return new NextResponse(null, { status: 204 });
+}
