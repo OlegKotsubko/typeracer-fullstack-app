@@ -7,10 +7,12 @@ export function TypingInput({
   currentWord,
   isLastWord,
   onSubmit,
+  disabled,
 }: {
   currentWord: string;
   isLastWord: boolean;
   onSubmit: (typed: string) => void;
+  disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -71,6 +73,7 @@ export function TypingInput({
         spellCheck={false}
         placeholder="Start typing..."
         className="text-lg font-mono"
+        disabled={disabled}
       />
       <p className="text-xs text-muted-foreground">
         Press <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd>{" "}

@@ -25,6 +25,7 @@ export default async function RacePage({
           raceId={race.id}
           raceTitle={race.title}
           raceText={race.text}
+          durationSeconds={race.durationSeconds}
         />
       </main>
     </>

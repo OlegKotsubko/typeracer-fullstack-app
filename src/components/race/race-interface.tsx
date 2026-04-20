@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { JoinDialog } from "./join-dialog";
 import { TextDisplay } from "./text-display";
 import { TypingInput } from "./typing-input";
 import { ProgressPanel } from "./progress-panel";
 import { RaceComplete } from "./race-complete";
 import { ParticipantList } from "./participant-list";
+import { RaceTimer } from "./race-timer";
 import { syncProgress } from "@/lib/race-sync";
 
 type RaceState = "idle" | "joined" | "racing" | "finished";
@@ -16,10 +17,12 @@ export function RaceInterface({
   raceId,
   raceTitle,
   raceText,
+  durationSeconds,
 }: {
   raceId: string;
   raceTitle: string;
   raceText: string;
+  durationSeconds: number | null;
 }) {
   const words = raceText.split(/\s+/);
   const [state, setState] = useState<RaceState>("idle");
@@ -28,12 +31,18 @@ export function RaceInterface({
   const [wordResults, setWordResults] = useState<WordResult[]>([]);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
+  const [timeExpired, setTimeExpired] = useState(false);
+  const [startedAt, setStartedAt] = useState<Date | null>(null);
 
   const progress = words.length > 0
     ? Math.round((currentWordIndex / words.length) * 100)
     : 0;
   const mistakes = wordResults.filter((r) => r === "incorrect").length;
   const totalAttempted = wordResults.length;
+
+  const handleTimeExpired = useCallback(() => {
+    setTimeExpired(true);
+  }, []);
 
   function handleJoin(id: string) {
     setParticipantId(id);
@@ -47,11 +56,13 @@ export function RaceInterface({
     if (state === "joined") {
       setState("racing");
       setStartTime(now);
+      const startedAtDate = new Date(now);
+      setStartedAt(startedAtDate);
       syncProgress(raceId, participantId!, {
         progress: 0,
         mistakes: 0,
         totalAttempted: 0,
-        startedAt: new Date(now).toISOString(),
+        startedAt: startedAtDate.toISOString(),
       });
     }
 
@@ -90,6 +101,8 @@ export function RaceInterface({
     setEndTime(null);
     setState("idle");
     setParticipantId(null);
+    setTimeExpired(false);
+    setStartedAt(null);
   }
 
   return (
@@ -102,6 +115,18 @@ export function RaceInterface({
 
       {(state === "joined" || state === "racing") && (
         <div className="space-y-6">
+          {durationSeconds && startedAt && (
+            <RaceTimer
+              durationSeconds={durationSeconds}
+              startedAt={startedAt}
+              onTimeExpired={handleTimeExpired}
+            />
+          )}
+          {timeExpired && (
+            <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              Time's up! Race has ended.
+            </div>
+          )}
           <ProgressPanel
             progress={progress}
             mistakes={mistakes}
@@ -117,6 +142,7 @@ export function RaceInterface({
             currentWord={words[currentWordIndex] ?? ""}
             isLastWord={currentWordIndex === words.length - 1}
             onSubmit={handleWordSubmit}
+            disabled={timeExpired}
           />
           <ParticipantList raceId={raceId} />
         </div>
