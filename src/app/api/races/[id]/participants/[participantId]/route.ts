@@ -84,7 +84,7 @@ export async function DELETE(
     .where(eq(races.id, raceId));
 
   if (!race) {
-    return new NextResponse(null, { status: 404 });
+    return NextResponse.json({ error: "Race not found" }, { status: 404 });
   }
 
   if (race.status !== "active") {
@@ -100,7 +100,7 @@ export async function DELETE(
     .returning({ id: participants.id });
 
   if (deleted.length === 0) {
-    return new NextResponse(null, { status: 404 });
+    return NextResponse.json({ error: "Participant not found" }, { status: 404 });
   }
 
   return new NextResponse(null, { status: 204 });
