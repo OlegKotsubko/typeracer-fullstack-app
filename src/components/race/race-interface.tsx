@@ -44,6 +44,15 @@ export function RaceInterface({
     setTimeExpired(true);
   }, []);
 
+  const handleSyncError = useCallback(
+    (error: { message: string }) => {
+      if (error.message === "Race time limit exceeded") {
+        setTimeExpired(true);
+      }
+    },
+    []
+  );
+
   function handleJoin(id: string) {
     setParticipantId(id);
     setState("joined");
@@ -63,7 +72,7 @@ export function RaceInterface({
         mistakes: 0,
         totalAttempted: 0,
         startedAt: startedAtDate.toISOString(),
-      });
+      }, handleSyncError);
     }
 
     const isCorrect = typed === words[currentWordIndex];
@@ -84,13 +93,13 @@ export function RaceInterface({
         mistakes: newMistakes,
         totalAttempted: newResults.length,
         completedAt: new Date(now).toISOString(),
-      });
+      }, handleSyncError);
     } else {
       syncProgress(raceId, participantId!, {
         progress: newProgress,
         mistakes: newMistakes,
         totalAttempted: newResults.length,
-      });
+      }, handleSyncError);
     }
   }
 
