@@ -65,7 +65,9 @@ export function RaceInterface({
       fetch(deleteUrl, { method: "DELETE", keepalive });
     };
 
-    const handlePageHide = () => sendLeave(true);
+    const handlePageHide = (event: PageTransitionEvent) => {
+      if (!event.persisted) sendLeave(true);
+    };
     window.addEventListener("pagehide", handlePageHide);
 
     return () => {
