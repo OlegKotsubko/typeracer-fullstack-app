@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { JoinDialog } from "./join-dialog";
 import { TextDisplay } from "./text-display";
 import { TypingInput } from "./typing-input";
@@ -52,6 +52,27 @@ export function RaceInterface({
     },
     []
   );
+
+  useEffect(() => {
+    if (!participantId) return;
+
+    const deleteUrl = `/api/races/${raceId}/participants/${participantId}`;
+    let hasSentLeave = false;
+
+    const sendLeave = (keepalive: boolean) => {
+      if (hasSentLeave) return;
+      hasSentLeave = true;
+      fetch(deleteUrl, { method: "DELETE", keepalive });
+    };
+
+    const handlePageHide = () => sendLeave(true);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+      sendLeave(false);
+    };
+  }, [participantId, raceId]);
 
   function handleJoin(id: string) {
     setParticipantId(id);
