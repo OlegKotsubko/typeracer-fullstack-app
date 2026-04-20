@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { participants } from "@/db/schema";
+import { participants, races } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function PATCH(
@@ -28,6 +28,24 @@ export async function PATCH(
       { error: "Race already completed for this participant" },
       { status: 400 }
     );
+  }
+
+  // Validate race duration limit
+  const [race] = await db
+    .select()
+    .from(races)
+    .where(eq(races.id, existing.raceId));
+
+  if (race?.durationSeconds && existing.startedAt) {
+    const elapsed = Date.now() - existing.startedAt.getTime();
+    const elapsedSeconds = Math.floor(elapsed / 1000);
+
+    if (elapsedSeconds >= race.durationSeconds) {
+      return NextResponse.json(
+        { error: "Race time limit exceeded" },
+        { status: 400 }
+      );
+    }
   }
 
   const body = await request.json();
