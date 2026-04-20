@@ -19,23 +19,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { TimePicker } from "@/components/ui/time-picker";
 import { toast } from "sonner";
+import { minutesSecondsToSeconds } from "@/lib/time-utils";
 
 export default function CreateRacePage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [status, setStatus] = useState("draft");
+  const [durationMinutes, setDurationMinutes] = useState(0);
+  const [durationSeconds, setDurationSeconds] = useState(0);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (durationMinutes === 0 && durationSeconds === 0) {
+      toast.error("Duration must be greater than 0");
+      return;
+    }
+
     setLoading(true);
+
+    const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds);
 
     const res = await fetch("/api/races", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, text, status }),
+      body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
     });
 
     if (res.ok) {
@@ -93,6 +105,13 @@ export default function CreateRacePage() {
                 </SelectContent>
               </Select>
             </div>
+            <TimePicker
+              label="Duration"
+              minutes={durationMinutes}
+              seconds={durationSeconds}
+              onMinutesChange={setDurationMinutes}
+              onSecondsChange={setDurationSeconds}
+            />
             <Button type="submit" disabled={loading}>
               {loading ? "Creating..." : "Create Race"}
             </Button>
