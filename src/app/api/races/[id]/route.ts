@@ -29,7 +29,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
-  const { title, text, status } = body;
+  const { title, text, status, durationSeconds } = body;
 
   const [updated] = await db
     .update(races)
@@ -37,6 +37,7 @@ export async function PATCH(
       ...(title !== undefined && { title }),
       ...(text !== undefined && { text }),
       ...(status !== undefined && { status }),
+      ...(durationSeconds !== undefined && { durationSeconds }),
     })
     .where(eq(races.id, id))
     .returning();
