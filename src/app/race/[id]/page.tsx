@@ -11,7 +11,12 @@ export default async function RacePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [race] = await db.select().from(races).where(eq(races.id, id));
+  let race;
+  try {
+    [race] = await db.select().from(races).where(eq(races.id, id));
+  } catch {
+    notFound();
+  }
 
   if (!race || race.status !== "active") {
     notFound();
