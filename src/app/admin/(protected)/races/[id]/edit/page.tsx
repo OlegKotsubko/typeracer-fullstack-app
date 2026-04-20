@@ -20,6 +20,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { TimePicker } from "@/components/ui/time-picker";
+import { secondsToMinutesSeconds, minutesSecondsToSeconds } from "@/lib/time-utils";
 
 export default function EditRacePage() {
   const router = useRouter();
@@ -27,6 +29,8 @@ export default function EditRacePage() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [status, setStatus] = useState("draft");
+  const [durationMinutes, setDurationMinutes] = useState(0);
+  const [durationSeconds, setDurationSeconds] = useState(0);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
@@ -38,6 +42,11 @@ export default function EditRacePage() {
         setTitle(race.title);
         setText(race.text);
         setStatus(race.status);
+        if (race.durationSeconds) {
+          const { minutes, seconds } = secondsToMinutesSeconds(race.durationSeconds);
+          setDurationMinutes(minutes);
+          setDurationSeconds(seconds);
+        }
       } else {
         toast.error("Race not found");
         router.push("/admin/races");
@@ -49,12 +58,20 @@ export default function EditRacePage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (durationMinutes === 0 && durationSeconds === 0) {
+      toast.error("Duration must be greater than 0");
+      return;
+    }
+
     setLoading(true);
+
+    const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds);
 
     const res = await fetch(`/api/races/${params.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, text, status }),
+      body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
     });
 
     if (res.ok) {
@@ -114,6 +131,15 @@ export default function EditRacePage() {
                   <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div title="How long participants have to complete the race" className="cursor-help">
+              <TimePicker
+                label="Duration"
+                minutes={durationMinutes}
+                seconds={durationSeconds}
+                onMinutesChange={setDurationMinutes}
+                onSecondsChange={setDurationSeconds}
+              />
             </div>
             <div className="flex gap-2">
               <Button type="submit" disabled={loading}>
