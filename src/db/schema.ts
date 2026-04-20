@@ -89,6 +89,7 @@ export const races = pgTable("races", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
   text: text("text").notNull(),
+  durationSeconds: integer("duration_seconds"),
   status: text("status", { enum: ["draft", "active", "completed"] })
     .notNull()
     .default("draft"),
