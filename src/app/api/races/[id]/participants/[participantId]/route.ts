@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { participants, races } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function PATCH(
   request: Request,
@@ -83,13 +83,25 @@ export async function DELETE(
     .from(races)
     .where(eq(races.id, raceId));
 
-  if (!race || race.status !== "active") {
+  if (!race) {
     return new NextResponse(null, { status: 404 });
   }
 
-  await db
+  if (race.status !== "active") {
+    return NextResponse.json(
+      { error: "Race is not active" },
+      { status: 400 }
+    );
+  }
+
+  const deleted = await db
     .delete(participants)
-    .where(eq(participants.id, participantId));
+    .where(and(eq(participants.id, participantId), eq(participants.raceId, raceId)))
+    .returning({ id: participants.id });
+
+  if (deleted.length === 0) {
+    return new NextResponse(null, { status: 404 });
+  }
 
   return new NextResponse(null, { status: 204 });
 }
