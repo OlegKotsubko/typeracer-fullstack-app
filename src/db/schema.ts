@@ -93,6 +93,7 @@ export const races = pgTable("races", {
   status: text("status", { enum: ["draft", "active", "completed"] })
     .notNull()
     .default("draft"),
+  startAt: timestamp("start_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -111,6 +112,7 @@ export const participants = pgTable(
     progress: integer("progress").notNull().default(0),
     mistakes: integer("mistakes").notNull().default(0),
     totalAttempted: integer("total_attempted").notNull().default(0),
+    wpm: integer("wpm").notNull().default(0),
     startedAt: timestamp("started_at"),
     completedAt: timestamp("completed_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),

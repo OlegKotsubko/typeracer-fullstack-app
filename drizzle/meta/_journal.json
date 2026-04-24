@@ -15,6 +15,13 @@
       "when": 1776680231972,
       "tag": "0001_small_red_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777035482473,
+      "tag": "0002_misty_jack_power",
+      "breakpoints": true
     }
   ]
 }
