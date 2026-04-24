@@ -62,7 +62,7 @@ export class RoomManager {
   findBySocketId(
     socketId: string
   ): { raceId: string; participant: RoomParticipant } | null {
-    for (const [raceId, room] of this.rooms) {
+    for (const [raceId, room] of Array.from(this.rooms.entries())) {
       const participant = room.participants.find(
         (p) => p.socketId === socketId
       );
