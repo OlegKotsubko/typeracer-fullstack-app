@@ -1,11 +1,19 @@
+import "dotenv/config";
+
+// dotenv/config loads .env by default; we need .env.local
 import { config } from "dotenv";
-config({ path: ".env.local" });
+config({ path: ".env.local", override: true });
 
 import { Server } from "socket.io";
-import { db } from "./db";
-import { participants, races } from "./db/schema";
 import { eq } from "drizzle-orm";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import * as schema from "./db/schema";
+import { participants, races } from "./db/schema";
 import { RoomManager } from "./lib/socket-server-logic";
+
+const sql = neon(process.env.DATABASE_URL!);
+const db = drizzle({ client: sql, schema });
 
 const PORT = parseInt(process.env.SOCKET_PORT || "3001", 10);
 
