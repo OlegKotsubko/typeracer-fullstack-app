@@ -3,30 +3,22 @@
 import { useEffect, useState } from "react";
 import { secondsToMinutesSeconds } from "@/lib/time-utils";
 
-interface RaceTimerProps {
-  durationSeconds: number | null;
-  startedAt: Date | null;
-  onTimeExpired: () => void;
-}
-
 export function RaceTimer({
   durationSeconds,
-  startedAt,
+  startAt,
   onTimeExpired,
-}: RaceTimerProps) {
-  const [remaining, setRemaining] = useState<number | null>(null);
+}: {
+  durationSeconds: number;
+  startAt: Date;
+  onTimeExpired: () => void;
+}) {
+  const [remaining, setRemaining] = useState(durationSeconds);
 
   useEffect(() => {
-    if (!durationSeconds || !startedAt) return;
-
     const updateTimer = () => {
-      const now = Date.now();
-      const start = new Date(startedAt).getTime();
-      const elapsed = Math.floor((now - start) / 1000);
+      const elapsed = Math.floor((Date.now() - startAt.getTime()) / 1000);
       const timeRemaining = Math.max(0, durationSeconds - elapsed);
-
       setRemaining(timeRemaining);
-
       if (timeRemaining <= 0) {
         onTimeExpired();
       }
@@ -34,11 +26,8 @@ export function RaceTimer({
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
-  }, [durationSeconds, startedAt, onTimeExpired]);
-
-  if (remaining === null) return null;
+  }, [durationSeconds, startAt, onTimeExpired]);
 
   const { minutes, seconds } = secondsToMinutesSeconds(remaining);
   const isExpired = remaining === 0;
@@ -50,7 +39,9 @@ export function RaceTimer({
       }`}
     >
       {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-      {isExpired && <p className="text-lg text-red-600 mt-2">Time's up!</p>}
+      {isExpired && (
+        <p className="text-lg text-red-600 mt-2">Time&apos;s up!</p>
+      )}
     </div>
   );
 }
