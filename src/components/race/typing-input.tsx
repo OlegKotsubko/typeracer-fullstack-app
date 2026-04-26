@@ -21,11 +21,14 @@ export function TypingInput({
   const inputRef = useRef<HTMLInputElement>(null);
   const prevLengthRef = useRef(0);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reset input when word changes */
   useEffect(() => {
     setValue("");
+    prevLengthRef.current = 0;
     onInputChange("");
     inputRef.current?.focus();
   }, [currentWord, onInputChange]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newValue = e.target.value;
