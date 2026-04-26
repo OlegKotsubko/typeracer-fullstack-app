@@ -1,10 +1,11 @@
 import { db } from "@/db";
-import { races, participants } from "@/db/schema";
-import { eq, count } from "drizzle-orm";
+import { races, participants, winners } from "@/db/schema";
+import { eq, count, asc } from "drizzle-orm";
 import { Header } from "@/components/layout/header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { HeroSection } from "@/components/home/hero-section";
 import { RacesSection } from "@/components/home/races-section";
+import { LeaderboardSection } from "@/components/home/leaderboard-section";
 import { BenefitsSection } from "@/components/home/benefits-section";
 
 export default async function HomePage() {
@@ -23,11 +24,18 @@ export default async function HomePage() {
     })
   );
 
+  const topWinners = await db
+    .select()
+    .from(winners)
+    .orderBy(asc(winners.timeSeconds))
+    .limit(10);
+
   return (
     <main className="flex-1 flex flex-col">
       <Header />
       <HeroSection />
       <RacesSection races={racesWithCounts} />
+      <LeaderboardSection winners={topWinners} />
       <BenefitsSection />
       <SiteFooter />
     </main>

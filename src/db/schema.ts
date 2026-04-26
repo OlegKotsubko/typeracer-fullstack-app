@@ -4,6 +4,7 @@ import {
   timestamp,
   boolean,
   integer,
+  real,
   uuid,
   index,
 } from "drizzle-orm/pg-core";
@@ -90,7 +91,7 @@ export const races = pgTable("races", {
   title: text("title").notNull(),
   text: text("text").notNull(),
   durationSeconds: integer("duration_seconds"),
-  status: text("status", { enum: ["draft", "active", "completed"] })
+  status: text("status", { enum: ["draft", "active", "ongoing", "completed"] })
     .notNull()
     .default("draft"),
   startAt: timestamp("start_at"),
@@ -119,3 +120,13 @@ export const participants = pgTable(
   },
   (table) => [index("participants_raceId_idx").on(table.raceId)]
 );
+
+export const winners = pgTable("winners", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  nickname: text("nickname").notNull(),
+  raceTitle: text("race_title").notNull(),
+  timeSeconds: real("time_seconds").notNull(),
+  wpm: integer("wpm").notNull(),
+  completedAt: timestamp("completed_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

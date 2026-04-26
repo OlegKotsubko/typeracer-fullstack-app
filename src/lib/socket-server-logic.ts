@@ -7,6 +7,7 @@ export type RoomParticipant = {
 type RoomState = {
   participants: RoomParticipant[];
   countdownStarted: boolean;
+  completedCount: number;
 };
 
 export class RoomManager {
@@ -15,7 +16,7 @@ export class RoomManager {
   private getOrCreateRoom(raceId: string): RoomState {
     let room = this.rooms.get(raceId);
     if (!room) {
-      room = { participants: [], countdownStarted: false };
+      room = { participants: [], countdownStarted: false, completedCount: 0 };
       this.rooms.set(raceId, room);
     }
     return room;
@@ -69,5 +70,22 @@ export class RoomManager {
       if (participant) return { raceId, participant };
     }
     return null;
+  }
+
+  markParticipantDone(raceId: string): { allDone: boolean } {
+    const room = this.rooms.get(raceId);
+    if (!room) return { allDone: true };
+    room.completedCount++;
+    return { allDone: room.completedCount >= room.participants.length };
+  }
+
+  isAllDone(raceId: string): boolean {
+    const room = this.rooms.get(raceId);
+    if (!room) return false;
+    return room.participants.length === 0 || room.completedCount >= room.participants.length;
+  }
+
+  resetRoom(raceId: string): void {
+    this.rooms.delete(raceId);
   }
 }

@@ -199,13 +199,22 @@ export function RaceInterface({
 
     if (newCompletedWords >= words.length) {
       // Race complete
-      setEndTime(Date.now());
+      const now = Date.now();
+      setEndTime(now);
       setState("finished");
 
       // Cancel any pending debounced update
       if (debounceRef.current) clearTimeout(debounceRef.current);
 
-      socketRef.current.emit("race-complete", { raceId, participantId });
+      const timeSeconds = parseFloat(
+        ((now - (raceStartTime ?? now)) / 1000).toFixed(1)
+      );
+      socketRef.current.emit("race-complete", {
+        raceId,
+        participantId,
+        timeSeconds,
+        wpm: currentWpm,
+      });
     } else {
       sendProgressUpdate(newProgress, mistakes, currentWpm);
     }

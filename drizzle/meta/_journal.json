@@ -22,6 +22,13 @@
       "when": 1777035482473,
       "tag": "0002_misty_jack_power",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777206975915,
+      "tag": "0003_brainy_natasha_romanoff",
+      "breakpoints": true
     }
   ]
 }
