@@ -11,37 +11,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner";
 
 export function JoinDialog({
-  raceId,
   onJoin,
 }: {
-  raceId: string;
-  onJoin: (participantId: string) => void;
+  onJoin: (nickname: string) => void;
 }) {
   const [nickname, setNickname] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!nickname.trim()) return;
-
-    setLoading(true);
-    const res = await fetch(`/api/races/${raceId}/participants`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname: nickname.trim() }),
-    });
-
-    if (res.ok) {
-      const participant = await res.json();
-      onJoin(participant.id);
-    } else {
-      const data = await res.json();
-      toast.error(data.error ?? "Failed to join race");
-      setLoading(false);
-    }
+    onJoin(nickname.trim());
   }
 
   return (
@@ -49,7 +30,7 @@ export function JoinDialog({
       <CardHeader>
         <CardTitle>Join the Race</CardTitle>
         <CardDescription>
-          Enter your name or nickname to start typing
+          Enter your nickname to join the lobby
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -66,8 +47,8 @@ export function JoinDialog({
               autoFocus
             />
           </div>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Joining..." : "Join Race"}
+          <Button type="submit">
+            Join Race
           </Button>
         </form>
       </CardContent>

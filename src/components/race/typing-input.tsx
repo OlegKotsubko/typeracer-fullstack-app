@@ -2,65 +2,84 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { isExactMatch, inputHasError } from "@/lib/typing-logic";
 
 export function TypingInput({
   currentWord,
-  isLastWord,
   onSubmit,
+  onInputChange,
+  onMistake,
   disabled,
 }: {
   currentWord: string;
-  isLastWord: boolean;
-  onSubmit: (typed: string) => void;
+  onSubmit: () => void;
+  onInputChange: (value: string) => void;
+  onMistake: () => void;
   disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevLengthRef = useRef(0);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reset input when word changes */
   useEffect(() => {
+    setValue("");
+    prevLengthRef.current = 0;
+    onInputChange("");
     inputRef.current?.focus();
-  }, [currentWord]);
+  }, [currentWord, onInputChange]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newValue = e.target.value;
 
-    // Submit on space (not for last word)
-    if (!isLastWord && newValue.endsWith(" ")) {
-      const typed = newValue.trimEnd();
-      if (typed.length > 0) {
-        onSubmit(typed);
-        setValue("");
-        return;
+    // Detect if a new character was added (not backspace)
+    if (newValue.length > prevLengthRef.current) {
+      const newChar = newValue[newValue.length - 1];
+      const expectedChar = currentWord[newValue.length - 1];
+
+      // Check if this keystroke is a mistake
+      if (newValue.length > currentWord.length || newChar !== expectedChar) {
+        onMistake();
+      } else if (inputHasError(newValue.slice(0, -1), currentWord)) {
+        // Previous chars had an error, so this one is also a mistake
+        onMistake();
       }
     }
 
-    setValue(newValue);
-  }
+    prevLengthRef.current = newValue.length;
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    // Submit on Enter
-    if (e.key === "Enter") {
-      const typed = value.trim();
-      if (typed.length > 0) {
-        onSubmit(typed);
+    // Check for space/enter submission attempt
+    if (newValue.endsWith(" ")) {
+      const typed = newValue.trimEnd();
+      if (isExactMatch(typed, currentWord)) {
         setValue("");
+        prevLengthRef.current = 0;
+        onSubmit();
+        return;
       }
-      e.preventDefault();
+      // Block space — word has errors or doesn't match
       return;
     }
 
-    // Prevent undo of previous words: backspace on empty input is no-op
-    // (default browser behavior already handles this correctly since input is empty)
+    setValue(newValue);
+    onInputChange(newValue);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      if (isExactMatch(value, currentWord)) {
+        setValue("");
+        prevLengthRef.current = 0;
+        onInputChange("");
+        onSubmit();
+      }
+      e.preventDefault();
+    }
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground min-w-fit">
-          Type:
-        </span>
-        <span className="text-sm font-mono font-semibold">{currentWord}</span>
-      </div>
       <Input
         ref={inputRef}
         value={value}
@@ -76,9 +95,9 @@ export function TypingInput({
         disabled={disabled}
       />
       <p className="text-xs text-muted-foreground">
-        Press <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd>{" "}
-        or <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> to
-        submit each word. You cannot undo previous words.
+        Type the highlighted word. Fix mistakes with backspace.{" "}
+        <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> or{" "}
+        <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> to submit when correct.
       </p>
     </div>
   );
