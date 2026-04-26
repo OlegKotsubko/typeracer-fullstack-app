@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run dev          # Start dev server (Next.js 16)
+npm run socket       # Start Socket.io server (port 3001)
 npm run build        # Production build
 npm run lint         # ESLint
 npx drizzle-kit generate   # Generate migration from schema changes
@@ -37,8 +38,9 @@ Two application tables (plus BetterAuth's `user`, `session`, `account`, `verific
 
 ### Real-time sync
 
-- **SSE**: `GET /api/races/[id]/events` streams participant data every 2s via Server-Sent Events
-- **Client debounce**: `src/lib/race-sync.ts` debounces progress PATCH calls (300ms), sends completion immediately
+- **WebSocket**: Socket.io server (`src/socket-server.ts`) on port 3001 manages race rooms, participant state, and progress broadcasting
+- **Client**: Singleton Socket.io client (`src/lib/socket.ts`) connects to the server. Progress updates debounced (300ms), completions sent immediately
+- **Race flow**: Lobby (3-player minimum) → Traffic light countdown (3s) → Racing → Finished
 
 ### Route structure
 
