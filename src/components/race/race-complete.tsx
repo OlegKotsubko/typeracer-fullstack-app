@@ -9,33 +9,29 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-type WordResult = "correct" | "incorrect";
-
 export function RaceComplete({
   words,
-  wordResults,
+  completedWords,
+  mistakes,
   startTime,
   endTime,
   onReset,
 }: {
   words: string[];
-  wordResults: WordResult[];
+  completedWords: number;
+  mistakes: number;
   startTime: number;
   endTime: number;
   onReset: () => void;
 }) {
   const totalTime = (endTime - startTime) / 1000;
   const minutes = totalTime / 60;
-  const correctWords = wordResults.filter((r) => r === "correct").length;
-  const mistakes = wordResults.filter((r) => r === "incorrect").length;
-  const accuracy =
-    wordResults.length > 0
-      ? Math.round((correctWords / wordResults.length) * 100)
-      : 0;
 
-  // Standard WPM: total characters / 5 / minutes
-  const totalChars = words.join(" ").length;
-  const wpm = minutes > 0 ? Math.round(totalChars / 5 / minutes) : 0;
+  // WPM based on completed characters
+  const completedChars = words.slice(0, completedWords).join(" ").length;
+  const wpm = minutes > 0 ? Math.round((completedChars / 5) / minutes) : 0;
+
+  const progress = Math.round((completedWords / words.length) * 100);
 
   return (
     <Card className="max-w-md mx-auto">
@@ -49,8 +45,8 @@ export function RaceComplete({
             <p className="text-sm text-muted-foreground">WPM</p>
           </div>
           <div>
-            <p className="text-3xl font-bold">{accuracy}%</p>
-            <p className="text-sm text-muted-foreground">Accuracy</p>
+            <p className="text-3xl font-bold">{progress}%</p>
+            <p className="text-sm text-muted-foreground">Completed</p>
           </div>
           <div>
             <p className="text-3xl font-bold">{totalTime.toFixed(1)}s</p>
