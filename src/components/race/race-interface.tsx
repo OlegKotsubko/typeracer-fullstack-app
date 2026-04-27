@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { JoinDialog } from "./join-dialog";
 import { RaceLobby } from "./race-lobby";
 import { TrafficLight } from "./traffic-light";
@@ -10,7 +10,7 @@ import { ProgressPanel } from "./progress-panel";
 import { RaceComplete } from "./race-complete";
 import { ParticipantList, ParticipantData } from "./participant-list";
 import { RaceTimer } from "./race-timer";
-import { calculateWpm } from "@/lib/typing-logic";
+import { calculateWpm, validateInput } from "@/lib/typing-logic";
 import { getSocket } from "@/lib/socket";
 
 type RaceState = "idle" | "lobby" | "countdown" | "racing" | "finished";
@@ -31,7 +31,8 @@ export function RaceInterface({
   raceText: string;
   durationSeconds: number | null;
 }) {
-  const words = raceText.split(/\s+/);
+  const words = useMemo(() => raceText.split(/\s+/), [raceText]);
+  const totalChars = words.reduce((sum, w) => sum + w.length, 0);
   const [state, setState] = useState<RaceState>("idle");
   const [participantId, setParticipantId] = useState<string | null>(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -53,6 +54,8 @@ export function RaceInterface({
 
   const socketRef = useRef(getSocket());
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestRef = useRef({ totalCorrectChars, currentWordIndex, raceStartTime, mistakes, participantId });
+  latestRef.current = { totalCorrectChars, currentWordIndex, raceStartTime, mistakes, participantId };
 
   // Live WPM calculation
   useEffect(() => {
@@ -158,26 +161,11 @@ export function RaceInterface({
     setEndTime(Date.now());
   }, []);
 
-  function sendProgressUpdate(progress: number, currentMistakes: number, currentWpm: number) {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    debounceRef.current = setTimeout(() => {
-      socketRef.current.emit("progress-update", {
-        raceId,
-        participantId,
-        progress,
-        mistakes: currentMistakes,
-        totalAttempted: completedWords + (currentInput.length > 0 ? 1 : 0),
-        wpm: currentWpm,
-      });
-    }, 300);
-  }
-
   function handleWordSubmit() {
     const newCompletedWords = completedWords + 1;
     const newCorrectChars = totalCorrectChars + words[currentWordIndex].length;
     const newIndex = currentWordIndex + 1;
-    const newProgress = Math.round((newCompletedWords / words.length) * 100);
+    const newProgress = totalChars > 0 ? Math.round((newCorrectChars / totalChars) * 100) : 0;
 
     setCompletedWords(newCompletedWords);
     setTotalCorrectChars(newCorrectChars);
@@ -198,12 +186,10 @@ export function RaceInterface({
     );
 
     if (newCompletedWords >= words.length) {
-      // Race complete
       const now = Date.now();
       setEndTime(now);
       setState("finished");
 
-      // Cancel any pending debounced update
       if (debounceRef.current) clearTimeout(debounceRef.current);
 
       const timeSeconds = parseFloat(
@@ -216,7 +202,16 @@ export function RaceInterface({
         wpm: currentWpm,
       });
     } else {
-      sendProgressUpdate(newProgress, mistakes, currentWpm);
+      // Cancel any pending debounced update and emit immediately with correct new values
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      socketRef.current.emit("progress-update", {
+        raceId,
+        participantId,
+        progress: newProgress,
+        mistakes,
+        totalAttempted: newCorrectChars,
+        wpm: currentWpm,
+      });
     }
   }
 
@@ -226,7 +221,33 @@ export function RaceInterface({
 
   const handleInputChange = useCallback((value: string) => {
     setCurrentInput(value);
-  }, []);
+
+    const { totalCorrectChars, currentWordIndex, raceStartTime, mistakes, participantId } = latestRef.current;
+    const correctChars = validateInput(value, words[currentWordIndex] ?? "").filter(
+      (c) => c.status === "correct"
+    ).length;
+    const newProgress = totalChars > 0 ? Math.round(((totalCorrectChars + correctChars) / totalChars) * 100) : 0;
+
+    setRaceParticipants((prev) =>
+      prev.map((p) =>
+        p.id === participantId ? { ...p, progress: newProgress } : p
+      )
+    );
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const elapsed = Date.now() - (raceStartTime ?? Date.now());
+      const currentWpm = calculateWpm(totalCorrectChars + correctChars, elapsed);
+      socketRef.current.emit("progress-update", {
+        raceId,
+        participantId,
+        progress: newProgress,
+        mistakes,
+        totalAttempted: totalCorrectChars + correctChars,
+        wpm: currentWpm,
+      });
+    }, 300);
+  }, [words, totalChars, raceId]);
 
   function handleReset() {
     setCurrentWordIndex(0);
@@ -245,8 +266,11 @@ export function RaceInterface({
     setParticipantId(null);
   }
 
-  const progress = words.length > 0
-    ? Math.round((completedWords / words.length) * 100)
+  const correctCharsInCurrentInput = validateInput(currentInput, words[currentWordIndex] ?? "").filter(
+    (c) => c.status === "correct"
+  ).length;
+  const progress = totalChars > 0
+    ? Math.round(((totalCorrectChars + correctCharsInCurrentInput) / totalChars) * 100)
     : 0;
 
   return (
