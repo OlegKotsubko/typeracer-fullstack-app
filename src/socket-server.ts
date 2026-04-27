@@ -45,13 +45,19 @@ async function checkAndInsertWinner(entry: {
     .from(winners)
     .orderBy(asc(winners.timeSeconds));
 
+  console.log("[leaderboard] current count:", current.length, "new time:", entry.timeSeconds);
+
   if (current.length < 10) {
     await db.insert(winners).values(entry);
+    console.log("[leaderboard] inserted (count < 10)");
   } else {
     const slowest = current[current.length - 1];
     if (entry.timeSeconds < slowest.timeSeconds) {
       await db.insert(winners).values(entry);
       await db.delete(winners).where(eq(winners.id, slowest.id));
+      console.log("[leaderboard] inserted and evicted slowest:", slowest.timeSeconds + "s");
+    } else {
+      console.log("[leaderboard] not fast enough, skipped");
     }
   }
 }
@@ -165,52 +171,55 @@ io.on("connection", (socket) => {
       timeSeconds: number;
       wpm: number;
     }) => {
-      const { raceId, participantId, timeSeconds, wpm } = data;
-      const completedAt = new Date();
+      try {
+        const { raceId, participantId, timeSeconds, wpm } = data;
+        const completedAt = new Date();
 
-      // Query race title and participant nickname BEFORE any mutations
-      const [race] = await db
-        .select({ title: races.title })
-        .from(races)
-        .where(eq(races.id, raceId));
+        console.log("[race-complete] received", { raceId, participantId, timeSeconds, wpm });
 
-      const roomParticipant = rooms.getParticipants(raceId).find(
-        (p) => p.id === participantId
-      );
+        // Get nickname from in-memory room BEFORE any mutations
+        const roomParticipant = rooms.getParticipants(raceId).find(
+          (p) => p.id === participantId
+        );
 
-      await db
-        .update(participants)
-        .set({ progress: 100, completedAt })
-        .where(eq(participants.id, participantId));
+        // Query race title BEFORE any mutations
+        const [race] = await db
+          .select({ title: races.title })
+          .from(races)
+          .where(eq(races.id, raceId));
 
-      io.to(`race:${raceId}`).emit("participant-completed", {
-        participantId,
-        completedAt: completedAt.toISOString(),
-      });
+        console.log("[race-complete] lookup", { hasRace: !!race, hasParticipant: !!roomParticipant });
 
-      // Insert into leaderboard using in-memory nickname (avoids DB race condition)
-      console.log("[race-complete]", {
-        participantId,
-        timeSeconds,
-        wpm,
-        hasRace: !!race,
-        hasParticipant: !!roomParticipant,
-      });
+        await db
+          .update(participants)
+          .set({ progress: 100, completedAt })
+          .where(eq(participants.id, participantId));
 
-      if (race && roomParticipant) {
-        await checkAndInsertWinner({
-          nickname: roomParticipant.nickname,
-          raceTitle: race.title,
-          timeSeconds,
-          wpm,
-          completedAt,
+        io.to(`race:${raceId}`).emit("participant-completed", {
+          participantId,
+          completedAt: completedAt.toISOString(),
         });
-      }
 
-      // Check if all participants are done — endRace deletes DB records
-      const { allDone } = rooms.markParticipantDone(raceId);
-      if (allDone) {
-        await endRace(raceId);
+        if (race && roomParticipant) {
+          await checkAndInsertWinner({
+            nickname: roomParticipant.nickname,
+            raceTitle: race.title,
+            timeSeconds,
+            wpm,
+            completedAt,
+          });
+          console.log("[race-complete] winner inserted:", roomParticipant.nickname, timeSeconds + "s");
+        } else {
+          console.warn("[race-complete] skipped winner insert — missing race or participant");
+        }
+
+        const { allDone } = rooms.markParticipantDone(raceId);
+        console.log("[race-complete] allDone:", allDone);
+        if (allDone) {
+          await endRace(raceId);
+        }
+      } catch (err) {
+        console.error("[race-complete] ERROR:", err);
       }
     }
   );
