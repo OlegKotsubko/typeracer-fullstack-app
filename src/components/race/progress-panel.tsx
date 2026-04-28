@@ -1,34 +1,36 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
-
 export function ProgressPanel({
   progress,
   mistakes,
   wpm,
+  totalCorrectChars,
 }: {
   progress: number;
   mistakes: number;
   wpm: number;
+  totalCorrectChars: number;
 }) {
+  const totalAttempted = totalCorrectChars + mistakes;
+  const accuracy = totalAttempted > 0 ? Math.round((totalCorrectChars / totalAttempted) * 100) : 100;
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">Progress</span>
-        <span className="font-semibold">{progress}%</span>
+    <div className="hud">
+      <div className="hud-cell">
+        <div className="k">WPM</div>
+        <div className="v">{wpm}</div>
       </div>
-      <Progress value={progress} className="h-3" />
-      <div className="flex gap-6 text-sm">
-        <div>
-          <span className="text-muted-foreground">WPM: </span>
-          <span className="font-semibold">{wpm}</span>
-        </div>
-        <div>
-          <span className="text-muted-foreground">Mistakes: </span>
-          <span className="font-semibold text-red-600 dark:text-red-400">
-            {mistakes}
-          </span>
-        </div>
+      <div className="hud-cell">
+        <div className="k">Accuracy</div>
+        <div className="v">{accuracy}%</div>
+      </div>
+      <div className="hud-cell">
+        <div className="k">Mistakes</div>
+        <div className="v">{mistakes}</div>
+      </div>
+      <div className="hud-cell">
+        <div className="k">Progress</div>
+        <div className="v">{progress}%</div>
       </div>
     </div>
   );

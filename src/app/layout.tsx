@@ -1,27 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const roboto = Roboto({
-  variable: "--font-roboto",
-  weight: ["400", "700", "900"],
+const jetbrains = JetBrains_Mono({
+  variable: "--font-mono",
+  weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "TypeRacer",
-  description: "Race your typing speed against others",
+  title: "NEONDRIFT // Typeracer",
+  description: "Outtype the neon. Outrun the grid.",
 };
 
 export default function RootLayout({
@@ -32,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} h-full antialiased dark`}
+      className={`${jetbrains.variable} h-full antialiased dark`}
       data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">

@@ -13,12 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { TimePicker } from "@/components/ui/time-picker";
 import { toast } from "sonner";
 import { minutesSecondsToSeconds } from "@/lib/time-utils";
@@ -61,14 +55,13 @@ export default function CreateRacePage() {
   }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-3xl font-bold mb-8">Create Race</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Race Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div>
+      <div className="sec-head" style={{ marginBottom: 18 }}>
+        <span className="kick">{"// New Build"}</span>
+        <h2 style={{ margin: 0 }}>Create Race</h2>
+      </div>
+      <div className="form-card chamfer">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -114,12 +107,13 @@ export default function CreateRacePage() {
                 onSecondsChange={setDurationSeconds}
               />
             </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Race"}
-            </Button>
+            <div className="form-actions">
+              <Button type="submit" disabled={loading} size="lg">
+                {loading ? "Creating..." : "Create Race →"}
+              </Button>
+            </div>
           </form>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

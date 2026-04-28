@@ -13,12 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { toast } from "sonner";
 import { TimePicker } from "@/components/ui/time-picker";
 import { secondsToMinutesSeconds, minutesSecondsToSeconds } from "@/lib/time-utils";
@@ -85,18 +79,17 @@ export default function EditRacePage() {
   }
 
   if (fetching) {
-    return <p className="text-muted-foreground">Loading...</p>;
+    return <p style={{ color: "var(--fg-dim)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 11 }}>{"// Loading..."}</p>;
   }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-3xl font-bold mb-8">Edit Race</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Race Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div>
+      <div className="sec-head" style={{ marginBottom: 18 }}>
+        <span className="kick">{"// Edit Build"}</span>
+        <h2 style={{ margin: 0 }}>Edit Race</h2>
+      </div>
+      <div className="form-card chamfer">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -141,21 +134,20 @@ export default function EditRacePage() {
                 onSecondsChange={setDurationSeconds}
               />
             </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : "Save Changes"}
-              </Button>
+            <div className="form-actions">
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 onClick={() => router.push("/admin/races")}
               >
                 Cancel
               </Button>
+              <Button type="submit" disabled={loading} size="lg">
+                {loading ? "Saving..." : "Save Changes →"}
+              </Button>
             </div>
           </form>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

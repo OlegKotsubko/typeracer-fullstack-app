@@ -273,66 +273,72 @@ export function RaceInterface({
     ? Math.round(((totalCorrectChars + correctCharsInCurrentInput) / totalChars) * 100)
     : 0;
 
+  const isRacing = state === "racing";
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">{raceTitle}</h1>
+    <div className="race-stage">
+      <div className={`race-frame${isRacing ? " wide" : ""}`}>
+        <span className="corners-bottom" />
+        <h2>{raceTitle}</h2>
+        <div className="subtitle">// {state === "idle" ? "ENTER NICKNAME" : state === "lobby" ? "AWAITING RIDERS" : state === "countdown" ? "SIGNAL INCOMING" : state === "racing" ? "BURN THE PROMPT" : "RUN COMPLETE"}</div>
 
-      {state === "idle" && (
-        <JoinDialog onJoin={handleJoin} />
-      )}
+        {state === "idle" && (
+          <JoinDialog onJoin={handleJoin} />
+        )}
 
-      {state === "lobby" && (
-        <RaceLobby participants={lobbyParticipants} slots={3} />
-      )}
+        {state === "lobby" && (
+          <RaceLobby participants={lobbyParticipants} slots={3} currentParticipantId={participantId} />
+        )}
 
-      {state === "countdown" && startAt && (
-        <TrafficLight startAt={startAt} onGo={handleGo} />
-      )}
+        {state === "countdown" && startAt && (
+          <TrafficLight startAt={startAt} onGo={handleGo} />
+        )}
 
-      {state === "racing" && (
-        <div className="space-y-6">
-          {durationSeconds && startAt && (
-            <RaceTimer
-              durationSeconds={durationSeconds}
-              startAt={startAt}
-              onTimeExpired={handleTimeExpired}
+        {state === "racing" && (
+          <>
+            {durationSeconds && startAt && (
+              <RaceTimer
+                durationSeconds={durationSeconds}
+                startAt={startAt}
+                onTimeExpired={handleTimeExpired}
+              />
+            )}
+            <ProgressPanel
+              progress={progress}
+              mistakes={mistakes}
+              wpm={wpm}
+              totalCorrectChars={totalCorrectChars + correctCharsInCurrentInput}
             />
-          )}
-          <ProgressPanel
-            progress={progress}
-            mistakes={mistakes}
-            wpm={wpm}
-          />
-          <TextDisplay
-            words={words}
-            currentWordIndex={currentWordIndex}
-            completedWords={completedWords}
-            currentInput={currentInput}
-          />
-          <TypingInput
-            currentWord={words[currentWordIndex] ?? ""}
-            onSubmit={handleWordSubmit}
-            onInputChange={handleInputChange}
-            onMistake={handleMistake}
-            disabled={timeExpired}
-          />
-          <ParticipantList
-            participants={raceParticipants}
-            currentParticipantId={participantId}
-          />
-        </div>
-      )}
+            <TextDisplay
+              words={words}
+              currentWordIndex={currentWordIndex}
+              completedWords={completedWords}
+              currentInput={currentInput}
+            />
+            <TypingInput
+              currentWord={words[currentWordIndex] ?? ""}
+              onSubmit={handleWordSubmit}
+              onInputChange={handleInputChange}
+              onMistake={handleMistake}
+              disabled={timeExpired}
+            />
+            <ParticipantList
+              participants={raceParticipants}
+              currentParticipantId={participantId}
+            />
+          </>
+        )}
 
-      {state === "finished" && (
-        <RaceComplete
-          words={words}
-          completedWords={completedWords}
-          mistakes={mistakes}
-          startTime={raceStartTime!}
-          endTime={endTime!}
-          onReset={handleReset}
-        />
-      )}
+        {state === "finished" && (
+          <RaceComplete
+            words={words}
+            completedWords={completedWords}
+            mistakes={mistakes}
+            startTime={raceStartTime!}
+            endTime={endTime!}
+            onReset={handleReset}
+          />
+        )}
+      </div>
     </div>
   );
 }

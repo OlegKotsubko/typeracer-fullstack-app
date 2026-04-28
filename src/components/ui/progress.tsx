@@ -29,7 +29,7 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
     <ProgressPrimitive.Track
       className={cn(
-        "relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted",
+        "relative flex h-2 w-full items-center overflow-x-hidden bg-[var(--surface-2)] border border-[var(--line)]",
         className
       )}
       data-slot="progress-track"
@@ -45,7 +45,7 @@ function ProgressIndicator({
   return (
     <ProgressPrimitive.Indicator
       data-slot="progress-indicator"
-      className={cn("h-full bg-primary transition-all", className)}
+      className={cn("h-full bg-gradient-to-r from-[var(--green)] to-[#7ee600] shadow-[0_0_12px_rgba(182,255,60,0.6)] transition-all", className)}
       {...props}
     />
   )
@@ -54,7 +54,7 @@ function ProgressIndicator({
 function ProgressLabel({ className, ...props }: ProgressPrimitive.Label.Props) {
   return (
     <ProgressPrimitive.Label
-      className={cn("text-sm font-medium", className)}
+      className={cn("text-xs font-mono uppercase tracking-[0.12em] text-[var(--fg-dim)]", className)}
       data-slot="progress-label"
       {...props}
     />
@@ -65,7 +65,7 @@ function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
   return (
     <ProgressPrimitive.Value
       className={cn(
-        "ml-auto text-sm text-muted-foreground tabular-nums",
+        "ml-auto text-sm font-mono text-[var(--green)] tabular-nums",
         className
       )}
       data-slot="progress-value"

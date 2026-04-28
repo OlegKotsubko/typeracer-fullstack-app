@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import { isExactMatch, inputHasError } from "@/lib/typing-logic";
 
 export function TypingInput({
@@ -33,23 +32,19 @@ export function TypingInput({
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newValue = e.target.value;
 
-    // Detect if a new character was added (not backspace)
     if (newValue.length > prevLengthRef.current) {
       const newChar = newValue[newValue.length - 1];
       const expectedChar = currentWord[newValue.length - 1];
 
-      // Check if this keystroke is a mistake
       if (newValue.length > currentWord.length || newChar !== expectedChar) {
         onMistake();
       } else if (inputHasError(newValue.slice(0, -1), currentWord)) {
-        // Previous chars had an error, so this one is also a mistake
         onMistake();
       }
     }
 
     prevLengthRef.current = newValue.length;
 
-    // Check for space/enter submission attempt
     if (newValue.endsWith(" ")) {
       const typed = newValue.trimEnd();
       if (isExactMatch(typed, currentWord)) {
@@ -58,7 +53,6 @@ export function TypingInput({
         onSubmit();
         return;
       }
-      // Block space — word has errors or doesn't match
       return;
     }
 
@@ -79,25 +73,24 @@ export function TypingInput({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <Input
-        ref={inputRef}
-        value={value}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onPaste={(e) => e.preventDefault()}
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck={false}
-        placeholder="Start typing..."
-        className="text-lg font-mono"
-        disabled={disabled}
-      />
-      <p className="text-xs text-muted-foreground">
-        Type the highlighted word. Fix mistakes with backspace.{" "}
-        <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> or{" "}
-        <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> to submit when correct.
+    <div>
+      <div className="input-row">
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onPaste={(e) => e.preventDefault()}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          placeholder="Burn the prompt..."
+          disabled={disabled}
+        />
+      </div>
+      <p className="input-hint">
+        <kbd>Space</kbd> or <kbd>Enter</kbd> to commit when the word is clean
       </p>
     </div>
   );

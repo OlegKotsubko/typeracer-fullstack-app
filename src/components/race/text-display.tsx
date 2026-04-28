@@ -15,46 +15,42 @@ export function TextDisplay({
 }) {
   return (
     <div
-      className="p-6 bg-muted/30 rounded-lg border text-lg leading-relaxed font-mono"
+      className="race-text"
       style={{ userSelect: "none", WebkitUserSelect: "none" }}
       onCopy={(e) => e.preventDefault()}
       onContextMenu={(e) => e.preventDefault()}
     >
       {words.map((word, i) => {
         if (i < completedWords) {
-          // Completed word — always green (all submitted words are correct)
           return (
-            <span key={i} className="px-0.5 text-green-600 dark:text-green-400">
-              {word}{" "}
+            <span key={i} className="w done">
+              {word.split("").map((char, ci) => (
+                <span key={ci} className="ch ok">{char}</span>
+              ))}{" "}
             </span>
           );
         }
 
         if (i === currentWordIndex) {
-          // Current word — show character-level coloring
           const charResults = validateInput(currentInput, word);
+          const caretIdx = currentInput.length;
           return (
-            <span key={i} className="px-0.5">
+            <span key={i} className="w cur">
               {word.split("").map((char, ci) => {
                 const result = charResults[ci];
-                let className = "";
+                let cls = "ch";
                 if (result) {
-                  className =
-                    result.status === "correct"
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30";
-                } else {
-                  className = "text-muted-foreground";
+                  cls += result.status === "correct" ? " ok" : " err";
                 }
+                if (ci === caretIdx) cls += " caret";
                 return (
-                  <span key={ci} className={className}>
+                  <span key={ci} className={cls}>
                     {char}
                   </span>
                 );
               })}
-              {/* Show overflow chars (typed beyond word length) */}
               {currentInput.length > word.length && (
-                <span className="text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30">
+                <span className="ch err">
                   {currentInput.slice(word.length)}
                 </span>
               )}
@@ -63,10 +59,11 @@ export function TextDisplay({
           );
         }
 
-        // Future word
         return (
-          <span key={i} className="px-0.5 text-muted-foreground">
-            {word}{" "}
+          <span key={i} className="w">
+            {word.split("").map((char, ci) => (
+              <span key={ci} className="ch">{char}</span>
+            ))}{" "}
           </span>
         );
       })}

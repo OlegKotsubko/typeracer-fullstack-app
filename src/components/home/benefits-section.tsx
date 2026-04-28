@@ -1,53 +1,46 @@
 export function BenefitsSection() {
-  return (
-    <section className="benefits-section">
-      <div className="max-w-350 mx-auto px-8 sm:px-12">
-        <h2 className="races-section-heading">Why <span>TypeRacer</span></h2>
-        <p className="races-section-subheading">Level up your typing skills while having fun</p>
+  const items = [
+    {
+      idx: "01",
+      title: "Sub-8ms input latency",
+      body: "Every keystroke lands before the scanline finishes. Tuned for mechanical boards and edge nodes — no middleware between you and the track.",
+    },
+    {
+      idx: "02",
+      title: "Lobbies in 30 seconds",
+      body: "Three riders minimum, eight maximum. Smart matchmaking pairs you with racers inside your WPM band so the finish line is always within reach.",
+    },
+    {
+      idx: "03",
+      title: "Original tracks, weekly",
+      body: "Fresh prose every Monday at 03:00 UTC, written by an in-house collective of cyberpunk authors. No recycled corpus, no AI slop, no public-domain fillers.",
+    },
+    {
+      idx: "04",
+      title: "Zero-bot guarantee",
+      body: "Keystroke cadence analysis flags scripted input the moment a perfect rhythm hits the wire. Leaderboards stay honest — your name sits next to real hands.",
+    },
+  ];
 
-        <div className="benefits-grid">
-          <div className="benefit-card">
-            <div className="benefit-icon">🚀</div>
-            <h3 className="benefit-title">Boost Your Speed</h3>
-            <p className="benefit-desc">
-              Practice against real opponents and watch your words-per-minute skyrocket. Track your improvement over time.
-            </p>
+  return (
+    <section id="how" className="sec" style={{ paddingTop: 0 }}>
+      <div className="wrap">
+        <div className="sec-head">
+          <div>
+            <div className="kick">Our Benefits</div>
+            <h2>Why racers choose neondrift</h2>
           </div>
-          <div className="benefit-card">
-            <div className="benefit-icon">🎯</div>
-            <h3 className="benefit-title">Improve Accuracy</h3>
-            <p className="benefit-desc">
-              Our real-time feedback highlights mistakes instantly, helping you build muscle memory for error-free typing.
-            </p>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-icon">⚡</div>
-            <h3 className="benefit-title">Real-Time Competition</h3>
-            <p className="benefit-desc">
-              Race head-to-head with live progress tracking. See every opponent&apos;s cursor move in real time.
-            </p>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-icon">🎮</div>
-            <h3 className="benefit-title">No Sign-Up Required</h3>
-            <p className="benefit-desc">
-              Jump into any race instantly with just a nickname. No accounts, no barriers &mdash; just pure typing action.
-            </p>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-icon">📊</div>
-            <h3 className="benefit-title">Live Progress Tracking</h3>
-            <p className="benefit-desc">
-              See your accuracy, speed, and progress in real time. Every keystroke counts toward your final score.
-            </p>
-          </div>
-          <div className="benefit-card">
-            <div className="benefit-icon">🌐</div>
-            <h3 className="benefit-title">Play Anywhere</h3>
-            <p className="benefit-desc">
-              Works in any modern browser on desktop or tablet. No downloads, no installs &mdash; just open and race.
-            </p>
-          </div>
+          <div className="meta">Built for the keyboard</div>
+        </div>
+        <div className="benefits">
+          {items.map((b) => (
+            <div key={b.idx} className="ben">
+              <div className="ben-idx">{`// ${b.idx}`}</div>
+              <h4>{b.title}</h4>
+              <p>{b.body}</p>
+              <div className="ben-bar" />
+            </div>
+          ))}
         </div>
       </div>
     </section>

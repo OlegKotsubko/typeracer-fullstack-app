@@ -9,25 +9,24 @@ type Winner = {
 
 export function LeaderboardSection({ winners }: { winners: Winner[] }) {
   return (
-    <section className="leaderboard-section">
-      <div className="max-w-350 mx-auto px-8 sm:px-12">
-        <h2 className="leaderboard-heading">
-          Top <span>10</span> Fastest
-        </h2>
-        <p className="leaderboard-subheading">
-          The quickest fingers on the leaderboard
-        </p>
+    <section className="sec">
+      <div className="wrap">
+        <div className="sec-head">
+          <div>
+            <div className="kick">Hall of Drifters</div>
+            <h2>Top 10 fastest</h2>
+          </div>
+          <div className="meta">The cleanest runs on the grid this cycle</div>
+        </div>
 
         {winners.length === 0 ? (
-          <p className="leaderboard-empty">
-            No winners yet. Be the first to claim the top spot!
-          </p>
+          <div className="lb-empty">// No winners yet — be the first to claim the top spot</div>
         ) : (
-          <div className="leaderboard-table-wrap">
-            <table className="leaderboard-table">
+          <div className="lb-wrap">
+            <table className="lb">
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>Rank</th>
                   <th>Racer</th>
                   <th>Race</th>
                   <th>Time</th>
@@ -37,15 +36,13 @@ export function LeaderboardSection({ winners }: { winners: Winner[] }) {
               </thead>
               <tbody>
                 {winners.map((w, i) => (
-                  <tr key={w.id} className={i < 3 ? "leaderboard-top3" : ""}>
-                    <td className="leaderboard-rank">{i + 1}</td>
-                    <td className="leaderboard-nickname">{w.nickname}</td>
-                    <td className="leaderboard-race">{w.raceTitle}</td>
-                    <td>{w.timeSeconds.toFixed(1)}s</td>
-                    <td>{w.wpm}</td>
-                    <td className="leaderboard-date">
-                      {new Date(w.completedAt).toLocaleDateString()}
-                    </td>
+                  <tr key={w.id} className={i < 3 ? "lb-top3" : ""}>
+                    <td className="lb-rank">{String(i + 1).padStart(2, "0")}</td>
+                    <td className="lb-nick">{w.nickname}</td>
+                    <td className="lb-race">{w.raceTitle}</td>
+                    <td className="lb-num">{w.timeSeconds.toFixed(1)}s</td>
+                    <td className="lb-num">{w.wpm}</td>
+                    <td className="lb-date">{new Date(w.completedAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

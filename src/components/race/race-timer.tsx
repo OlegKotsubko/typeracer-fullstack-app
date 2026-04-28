@@ -31,17 +31,17 @@ export function RaceTimer({
 
   const { minutes, seconds } = secondsToMinutesSeconds(remaining);
   const isExpired = remaining === 0;
+  const lowTime = remaining > 0 && remaining <= 10;
 
   return (
-    <div
-      className={`text-center font-mono text-2xl font-bold ${
-        isExpired ? "text-red-600" : "text-foreground"
-      }`}
-    >
-      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-      {isExpired && (
-        <p className="text-lg text-red-600 mt-2">Time&apos;s up!</p>
-      )}
+    <div className="hud" style={{ marginBottom: 12 }}>
+      <div className={`hud-cell${isExpired || lowTime ? " warn" : ""}`} style={{ borderRight: "none", gridColumn: "1 / -1" }}>
+        <div className="k">Time Remaining</div>
+        <div className="v">
+          {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+          {isExpired && " // EXPIRED"}
+        </div>
+      </div>
     </div>
   );
 }
