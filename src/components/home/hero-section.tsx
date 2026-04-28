@@ -24,10 +24,10 @@ export function HeroSection() {
           <span><i>04</i> Green means go</span>
         </div>
         <div className="hero-cta">
-          <a href="#races" className={buttonVariants({ size: "lg" })}>
+          <a href="/#races" className={buttonVariants({ size: "lg" })}>
             Join a Race ↓
           </a>
-          <a href="#how" className={buttonVariants({ size: "lg", variant: "ghost" })}>
+          <a href="/#how" className={buttonVariants({ size: "lg", variant: "ghost" })}>
             How it works
           </a>
         </div>

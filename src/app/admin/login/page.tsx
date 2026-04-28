@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@neondrift.io"
               required
-              className="chamfer h-10 px-3 bg-black/40 border border-[var(--line)] font-mono text-[14px] text-[var(--fg)] placeholder:text-[var(--color-muted-foreground)] focus:outline-none focus:border-[var(--green)] focus:shadow-[0_0_0_3px_rgba(182,255,60,0.15)] transition-shadow w-full"
+              className="chamfer h-10 px-3 bg-black/40 border border-neon-line font-mono text-[14px] text-(--fg) placeholder:text-(--color-muted-foreground) focus:outline-none focus:border-neon-green focus:shadow-[0_0_0_3px_rgba(182,255,60,0.15)] transition-shadow w-full"
             />
           </div>
           <div className="field">
@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="some secret password"
-              className="chamfer h-10 px-3 bg-black/40 border border-[var(--line)] font-mono text-[14px] text-[var(--fg)] placeholder:text-[var(--color-muted-foreground)] focus:outline-none focus:border-[var(--green)] focus:shadow-[0_0_0_3px_rgba(182,255,60,0.15)] transition-shadow w-full"
+              className="chamfer h-10 px-3 bg-black/40 border border-neon-line font-mono text-[14px] text-(--fg) placeholder:text-(--color-muted-foreground) focus:outline-none focus:border-neon-green focus:shadow-[0_0_0_3px_rgba(182,255,60,0.15)] transition-shadow w-full"
             />
           </div>
           <Button type="submit" disabled={loading} size="lg" className="w-full">

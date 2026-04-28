@@ -22,7 +22,7 @@ export function JoinDialog({
         <label htmlFor="nickname">Nickname</label>
         <input
           id="nickname"
-          className="chamfer h-10 px-3 bg-black/40 border border-[var(--line)] font-mono text-[14px] text-[var(--fg)] placeholder:text-[var(--color-muted-foreground)] focus:outline-none focus:border-[var(--green)] focus:shadow-[0_0_0_3px_rgba(182,255,60,0.15)] transition-shadow"
+          className="chamfer h-10 px-3 bg-black/40 border border-neon-line font-mono text-[14px] text-(--fg) placeholder:text-(--color-muted-foreground) focus:outline-none focus:border-neon-green focus:shadow-[0_0_0_3px_rgba(182,255,60,0.15)] transition-shadow"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
           placeholder="streetsamurai_07"
