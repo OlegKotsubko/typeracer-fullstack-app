@@ -1,21 +1,25 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { races } from "@/db/schema";
 import { getServerSession } from "@/lib/auth-server";
-import { eq } from "drizzle-orm";
+import { deleteRace, getRace, updateRace } from "@/server/services/races";
+import { ServiceError } from "@/server/services/errors";
+
+function errorResponse(err: unknown) {
+  if (err instanceof ServiceError) {
+    return NextResponse.json({ error: err.message }, { status: err.status });
+  }
+  throw err;
+}
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const [race] = await db.select().from(races).where(eq(races.id, id));
-
-  if (!race) {
-    return NextResponse.json({ error: "Race not found" }, { status: 404 });
+  try {
+    return NextResponse.json(await getRace(id));
+  } catch (err) {
+    return errorResponse(err);
   }
-
-  return NextResponse.json(race);
 }
 
 export async function PATCH(
@@ -28,25 +32,12 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const body = await request.json();
-  const { title, text, status, durationSeconds } = body;
-
-  const [updated] = await db
-    .update(races)
-    .set({
-      ...(title !== undefined && { title }),
-      ...(text !== undefined && { text }),
-      ...(status !== undefined && { status }),
-      ...(durationSeconds !== undefined && { durationSeconds }),
-    })
-    .where(eq(races.id, id))
-    .returning();
-
-  if (!updated) {
-    return NextResponse.json({ error: "Race not found" }, { status: 404 });
+  try {
+    const body = await request.json();
+    return NextResponse.json(await updateRace(id, body));
+  } catch (err) {
+    return errorResponse(err);
   }
-
-  return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -59,14 +50,10 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const [deleted] = await db
-    .delete(races)
-    .where(eq(races.id, id))
-    .returning();
-
-  if (!deleted) {
-    return NextResponse.json({ error: "Race not found" }, { status: 404 });
+  try {
+    await deleteRace(id);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return errorResponse(err);
   }
-
-  return NextResponse.json({ success: true });
 }
