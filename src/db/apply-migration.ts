@@ -1,5 +1,4 @@
-import { config } from "dotenv";
-config({ path: ".env.local" });
+import "dotenv/config";
 
 import { neon } from "@neondatabase/serverless";
 import { readFileSync } from "node:fs";

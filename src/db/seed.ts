@@ -1,5 +1,4 @@
-import { config } from "dotenv";
-config({ path: ".env.local" });
+import "dotenv/config";
 
 async function seed() {
   const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";

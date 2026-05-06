@@ -1,9 +1,5 @@
 import "dotenv/config";
 
-// dotenv/config loads .env by default; we need .env.local
-import { config } from "dotenv";
-config({ path: ".env.local", override: true });
-
 import { Server } from "socket.io";
 import { eq } from "drizzle-orm";
 import { neon } from "@neondatabase/serverless";
