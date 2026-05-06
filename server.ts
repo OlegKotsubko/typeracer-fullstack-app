@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { createServer } from "http";
-import { parse } from "url";
 import next from "next";
 import { Server } from "socket.io";
 import { eq } from "drizzle-orm";
@@ -22,8 +21,7 @@ const rooms = new RoomManager();
 
 app.prepare().then(() => {
   const httpServer = createServer((req, res) => {
-    const parsedUrl = parse(req.url!, true);
-    handle(req, res, parsedUrl);
+    handle(req, res);
   });
 
   const io = new Server(httpServer, {
