@@ -48,6 +48,7 @@ Two application tables (plus BetterAuth's `user`, `session`, `account`, `verific
 - `/race/[id]` — public race page (join + type)
 - `/admin/*` — authenticated admin panel (CRUD for races)
 - `/api/races/*` — REST API; write endpoints require session auth
+- `/api/docs` — OpenAPI/Swagger spec (local: http://localhost:3000/api/docs · prod: https://typeracer-fullstack-app.onrender.com/api/docs)
 
 ### UI
 
