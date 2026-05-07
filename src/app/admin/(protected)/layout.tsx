@@ -18,7 +18,7 @@ export default async function AdminProtectedLayout({
   console.log("[layout] session:", session ? session.user?.email : null);
 
   if (!session) {
-    redirect("/admin/login");
+    redirect("/admin/login?from=layout-no-session");
   }
 
   return <AdminShell>{children}</AdminShell>;
