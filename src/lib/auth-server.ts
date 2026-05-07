@@ -1,10 +1,15 @@
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 
 export async function getServerSession() {
-  const hdrs = await headers();
-  console.log("[getServerSession] cookie header:", hdrs.get("cookie"));
-  const session = await auth.api.getSession({ headers: hdrs });
-  console.log("[getServerSession] session:", session ? session.user?.email : null);
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
+
+  const session = await auth.api.getSession({
+    headers: new Headers({ cookie: cookieHeader }),
+  });
   return session;
 }
