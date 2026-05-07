@@ -9,6 +9,9 @@ import { LeaderboardSection } from "@/components/home/leaderboard-section";
 import { BenefitsSection } from "@/components/home/benefits-section";
 import { PricingSection } from "@/components/home/pricing-section";
 import Ticker from "@/components/ui/ticker";
+
+export const dynamic = "force-dynamic";
+
 const TICKER_DATA = [
   { label: "Live Racers", value: "1,284" },
   { label: "Top WPM", value: "168" },
