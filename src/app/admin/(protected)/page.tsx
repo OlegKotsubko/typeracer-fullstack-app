@@ -4,6 +4,8 @@ import { count, max } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const allRaces = await db.select().from(races);
   const active = allRaces.filter((r) => r.status === "active").length;
