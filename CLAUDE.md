@@ -22,7 +22,7 @@ TypeRacer is a real-time multiplayer typing race app built with Next.js 16 (App 
 
 ### Key layers
 
-- **Database**: Neon serverless PostgreSQL via `@neondatabase/serverless`. Drizzle ORM with schema in `src/db/schema.ts`, connection in `src/db/index.ts`. Config reads `DATABASE_URL` from `.env.local`.
+- **Database**: Neon serverless PostgreSQL via `@neondatabase/serverless`. Drizzle ORM with schema in `src/db/schema.ts`, connection in `src/db/index.ts`. Config reads `DATABASE_URL` from `.env`.
 - **Auth**: BetterAuth with email/password. Three entry points:
   - `src/lib/auth.ts` — server-side auth instance (BetterAuth + Drizzle adapter)
   - `src/lib/auth-server.ts` — `getServerSession()` helper for API routes/server components
