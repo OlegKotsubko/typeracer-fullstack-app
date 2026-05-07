@@ -1,13 +1,14 @@
-type Winner = {
-  id: string;
-  nickname: string;
-  raceTitle: string;
-  timeSeconds: number;
-  wpm: number;
-  completedAt: Date;
-};
+import { db } from "@/db";
+import { winners } from "@/db/schema";
+import { asc } from "drizzle-orm";
 
-export function LeaderboardSection({ winners }: { winners: Winner[] }) {
+export async function LeaderboardSection() {
+  const topWinners = await db
+    .select()
+    .from(winners)
+    .orderBy(asc(winners.timeSeconds))
+    .limit(10);
+
   return (
     <section className="sec">
       <div className="wrap">
@@ -19,7 +20,7 @@ export function LeaderboardSection({ winners }: { winners: Winner[] }) {
           <div className="meta">The cleanest runs on the grid this cycle</div>
         </div>
 
-        {winners.length === 0 ? (
+        {topWinners.length === 0 ? (
           <div className="lb-empty">// No winners yet — be the first to claim the top spot</div>
         ) : (
           <div className="lb-wrap">
@@ -35,7 +36,7 @@ export function LeaderboardSection({ winners }: { winners: Winner[] }) {
                 </tr>
               </thead>
               <tbody>
-                {winners.map((w, i) => (
+                {topWinners.map((w, i) => (
                   <tr key={w.id} className={i < 3 ? "lb-top3" : ""}>
                     <td className="lb-rank">{String(i + 1).padStart(2, "0")}</td>
                     <td className="lb-nick">{w.nickname}</td>
