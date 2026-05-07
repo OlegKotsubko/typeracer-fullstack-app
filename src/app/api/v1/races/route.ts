@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { withApi } from "../_lib/handler";
+import { withApi } from "@/app/api/v1/_lib/handler";
 import { createRace, listRaces } from "@/server/services/races";
 
 export const GET = withApi({}, async () => {
