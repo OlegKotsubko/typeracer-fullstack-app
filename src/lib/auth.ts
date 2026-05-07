@@ -5,6 +5,9 @@ import "dotenv/config";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
+  advanced: {
+    useSecureCookies: true,
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
