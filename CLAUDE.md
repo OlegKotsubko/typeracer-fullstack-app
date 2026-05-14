@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev          # Start dev server (Next.js 16)
+npm run dev      # Start both Next.js (3000) and Socket.io (3001) concurrently
 npm run socket       # Start Socket.io server (port 3001)
 npm run build        # Production build
 npm run lint         # ESLint
