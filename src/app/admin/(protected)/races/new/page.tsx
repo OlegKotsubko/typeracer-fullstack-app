@@ -38,7 +38,7 @@ export default function CreateRacePage() {
 
     const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds);
 
-    const res = await fetch("/api/races", {
+    const res = await fetch("/api/v1/races", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
@@ -49,7 +49,7 @@ export default function CreateRacePage() {
       router.push("/admin/races");
     } else {
       const data = await res.json();
-      toast.error(data.error ?? "Failed to create race");
+      toast.error(data.error?.message ?? "Failed to create race");
     }
     setLoading(false);
   }

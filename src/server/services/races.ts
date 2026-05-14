@@ -14,8 +14,8 @@ export type CreateRaceInput = {
 
 export type UpdateRaceInput = Partial<CreateRaceInput>;
 
-export async function listRaces() {
-  return db.select().from(races).orderBy(desc(races.createdAt));
+export async function listRaces(limit = 20, offset = 0) {
+  return db.select().from(races).orderBy(desc(races.createdAt)).limit(limit).offset(offset);
 }
 
 export async function getRace(id: string) {

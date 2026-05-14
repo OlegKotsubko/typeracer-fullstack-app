@@ -30,9 +30,9 @@ export default function EditRacePage() {
 
   useEffect(() => {
     async function fetchRace() {
-      const res = await fetch(`/api/races/${params.id}`);
+      const res = await fetch(`/api/v1/races/${params.id}`);
       if (res.ok) {
-        const race = await res.json();
+        const { data: race } = await res.json();
         setTitle(race.title);
         setText(race.text);
         setStatus(race.status);
@@ -62,7 +62,7 @@ export default function EditRacePage() {
 
     const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds);
 
-    const res = await fetch(`/api/races/${params.id}`, {
+    const res = await fetch(`/api/v1/races/${params.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
@@ -73,7 +73,7 @@ export default function EditRacePage() {
       router.push("/admin/races");
     } else {
       const data = await res.json();
-      toast.error(data.error ?? "Failed to update race");
+      toast.error(data.error?.message ?? "Failed to update race");
     }
     setLoading(false);
   }

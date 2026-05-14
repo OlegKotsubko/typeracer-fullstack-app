@@ -30,10 +30,11 @@ export default function AdminRacesPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const res = await fetch("/api/races");
+      const res = await fetch("/api/v1/races");
       if (cancelled) return;
       if (res.ok) {
-        setRaces(await res.json());
+        const { data } = await res.json();
+        setRaces(data);
       }
       setLoading(false);
     })();
@@ -42,7 +43,7 @@ export default function AdminRacesPage() {
 
   async function handleDelete() {
     if (!deleteId) return;
-    const res = await fetch(`/api/races/${deleteId}`, { method: "DELETE" });
+    const res = await fetch(`/api/v1/races/${deleteId}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("Race deleted");
       setRaces(races.filter((r) => r.id !== deleteId));

@@ -23,7 +23,7 @@ export type CreatedApiKey = {
   createdAt: Date;
 };
 
-export async function listApiKeys(userId: string) {
+export async function listApiKeys(userId: string, limit = 20, offset = 0) {
   return db
     .select({
       id: apiKey.id,
@@ -35,7 +35,9 @@ export async function listApiKeys(userId: string) {
     })
     .from(apiKey)
     .where(eq(apiKey.userId, userId))
-    .orderBy(desc(apiKey.createdAt));
+    .orderBy(desc(apiKey.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function createApiKey(

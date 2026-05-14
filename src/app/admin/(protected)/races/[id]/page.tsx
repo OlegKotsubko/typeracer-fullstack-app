@@ -42,21 +42,22 @@ export default function AdminRaceMonitorPage() {
   const [participants, setParticipants] = useState<Participant[]>([]);
 
   useEffect(() => {
-    fetch(`/api/races/${params.id}`)
+    fetch(`/api/v1/races/${params.id}`)
       .then((res) => res.json())
-      .then(setRace);
+      .then(({ data }) => setRace(data));
   }, [params.id]);
 
   useEffect(() => {
-    const eventSource = new EventSource(`/api/races/${params.id}/events`);
-    eventSource.onmessage = (event) => {
-      try {
-        setParticipants(JSON.parse(event.data));
-      } catch {
-        // ignore
+    let cancelled = false;
+    (async () => {
+      const res = await fetch(`/api/v1/races/${params.id}/participants`);
+      if (cancelled) return;
+      if (res.ok) {
+        const { data } = await res.json();
+        setParticipants(data);
       }
-    };
-    return () => eventSource.close();
+    })();
+    return () => { cancelled = true; };
   }, [params.id]);
 
   if (!race) {

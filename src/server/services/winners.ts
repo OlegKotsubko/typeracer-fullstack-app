@@ -12,12 +12,13 @@ export type WinnerEntry = {
   completedAt: Date;
 };
 
-export async function listWinners(limit = LEADERBOARD_SIZE) {
+export async function listWinners(limit = 20, offset = 0) {
   return db
     .select()
     .from(winners)
     .orderBy(asc(winners.timeSeconds), desc(winners.completedAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function recordWinnerIfQualifies(entry: WinnerEntry) {

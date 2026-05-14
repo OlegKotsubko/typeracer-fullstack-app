@@ -17,11 +17,13 @@ export type ProgressInput = {
   completedAt?: Date | string;
 };
 
-export async function listParticipants(raceId: string) {
+export async function listParticipants(raceId: string, limit = 20, offset = 0) {
   return db
     .select()
     .from(participants)
-    .where(eq(participants.raceId, raceId));
+    .where(eq(participants.raceId, raceId))
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function getParticipant(participantId: string) {
