@@ -1,6 +1,6 @@
 import { ServiceError } from "@/server/services/errors";
 
-jest.mock("@/db", () => ({ db: {} }));
+jest.mock("@drizzle", () => ({ db: {} }));
 jest.mock("@/server/services/subscriptions", () => ({
   requirePlan: jest.fn(),
   getActivePlan: jest.fn(),

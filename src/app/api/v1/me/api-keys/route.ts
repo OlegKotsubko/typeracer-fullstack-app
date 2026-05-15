@@ -3,8 +3,8 @@ import { z } from "zod";
 import { withApi } from "@/app/api/v1/_lib/handler";
 import { createApiKey, listApiKeys } from "@/server/services/api-keys";
 import { ServiceError } from "@/server/services/errors";
-import { db } from "@/db";
-import { apiKey } from "@/db/schema";
+import { db } from "@drizzle";
+import { apiKey } from "@drizzle/schema";
 import { count, eq } from "drizzle-orm";
 
 function requireSession(source: string) {

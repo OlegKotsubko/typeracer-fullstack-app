@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { participants, races } from "@/db/schema";
+import { db } from "@drizzle";
+import { participants, races } from "@drizzle/schema";
 import { and, eq } from "drizzle-orm";
 import { ServiceError } from "./errors";
 

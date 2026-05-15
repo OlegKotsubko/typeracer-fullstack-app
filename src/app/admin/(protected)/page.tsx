@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { races, participants, winners } from "@/db/schema";
+import { db } from "@drizzle";
+import { races, participants, winners } from "@drizzle/schema";
 import { count, max } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

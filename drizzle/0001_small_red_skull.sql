@@ -1,1 +1,0 @@
-ALTER TABLE "races" ADD COLUMN "duration_seconds" integer;

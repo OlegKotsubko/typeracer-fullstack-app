@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { races } from "@/db/schema";
+import { db } from "@drizzle";
+import { races } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/header";

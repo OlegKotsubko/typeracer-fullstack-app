@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withApi } from "@/app/api/v1/_lib/handler";
 import { listWinners } from "@/server/services/winners";
-import { db } from "@/db";
-import { winners } from "@/db/schema";
+import { db } from "@drizzle";
+import { winners } from "@drizzle/schema";
 import { count } from "drizzle-orm";
 
 const query = z.object({

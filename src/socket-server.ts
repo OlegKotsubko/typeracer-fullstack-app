@@ -3,8 +3,8 @@ import { Server } from "socket.io";
 import { eq } from "drizzle-orm";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import * as schema from "./db/schema";
-import { races } from "./db/schema";
+import * as schema from "@drizzle/schema";
+import { races } from "@drizzle/schema";
 import { RoomManager } from "./lib/socket-server-logic";
 import { setupSocketHandlers } from "./lib/socket-handlers";
 

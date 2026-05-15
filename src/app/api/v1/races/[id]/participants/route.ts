@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withApi } from "@/app/api/v1/_lib/handler";
 import { joinRace, listParticipants } from "@/server/services/participants";
-import { db } from "@/db";
-import { participants } from "@/db/schema";
+import { db } from "@drizzle";
+import { participants } from "@drizzle/schema";
 import { count, eq } from "drizzle-orm";
 
 const params = z.object({ id: z.string().uuid() });

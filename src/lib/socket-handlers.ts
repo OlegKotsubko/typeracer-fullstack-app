@@ -1,7 +1,7 @@
 import { eq, asc } from "drizzle-orm";
 import type { Server, Socket } from "socket.io";
 import type { drizzle } from "drizzle-orm/neon-http";
-import type * as schema from "@/db/schema";
+import type * as schema from "@drizzle/schema";
 import type { RoomManager } from "@/lib/socket-server-logic";
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;

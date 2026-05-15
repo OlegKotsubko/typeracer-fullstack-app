@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { plan, subscription, type PlanLimits } from "@/db/schema";
+import { db } from "@drizzle";
+import { plan, subscription, type PlanLimits } from "@drizzle/schema";
 import { and, eq } from "drizzle-orm";
 import { ServiceError } from "./errors";
 

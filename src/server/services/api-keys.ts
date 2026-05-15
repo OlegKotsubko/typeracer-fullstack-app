@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { apiKey } from "@/db/schema";
+import { db } from "@drizzle";
+import { apiKey } from "@drizzle/schema";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { createHash, randomBytes } from "node:crypto";
 import { ServiceError } from "./errors";

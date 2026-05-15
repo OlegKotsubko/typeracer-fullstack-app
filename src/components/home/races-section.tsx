@@ -1,6 +1,6 @@
 import Link from "next/link";
-import {db} from "@/db";
-import { races, participants } from "@/db/schema";
+import {db} from "@drizzle";
+import { races, participants } from "@drizzle/schema";
 import {eq, count} from "drizzle-orm";
 
 export async function RacesSection() {

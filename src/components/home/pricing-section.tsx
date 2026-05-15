@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { plan } from "@/db/schema";
+import { db } from "@drizzle";
+import { plan } from "@drizzle/schema";
 import { asc } from "drizzle-orm";
 
 const FEATURES: Record<string, string[]> = {

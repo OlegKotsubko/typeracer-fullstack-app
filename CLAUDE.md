@@ -13,7 +13,7 @@ npm run build        # Production build
 npm run lint         # ESLint
 npx drizzle-kit generate   # Generate migration from schema changes
 npx drizzle-kit migrate    # Run migrations against DATABASE_URL
-npx tsx src/db/seed.ts     # Seed admin user (requires dev server running)
+npx tsx drizzle/seed.ts     # Seed admin user (requires dev server running)
 ```
 
 ## Architecture
@@ -22,7 +22,7 @@ TypeRacer is a real-time multiplayer typing race app built with Next.js 16 (App 
 
 ### Key layers
 
-- **Database**: Neon serverless PostgreSQL via `@neondatabase/serverless`. Drizzle ORM with schema in `src/db/schema.ts`, connection in `src/db/index.ts`. Config reads `DATABASE_URL` from `.env`.
+- **Database**: Neon serverless PostgreSQL via `@neondatabase/serverless`. Drizzle ORM with schemas in `drizzle/schemas/`, barrel at `drizzle/schema.ts`, connection in `drizzle/index.ts`. Config reads `DATABASE_URL` from `.env`.
 - **Auth**: BetterAuth with email/password. Three entry points:
   - `src/lib/auth.ts` — server-side auth instance (BetterAuth + Drizzle adapter)
   - `src/lib/auth-server.ts` — `getServerSession()` helper for API routes/server components
@@ -56,4 +56,4 @@ shadcn/ui components in `src/components/ui/`, app components in `src/components/
 
 ### Path alias
 
-`@/*` maps to `./src/*` (tsconfig paths).
+`@/*` maps to `./src/*` and `@drizzle/*` maps to `./drizzle/*` (tsconfig paths).

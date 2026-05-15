@@ -1,6 +1,6 @@
 -. Add TypeScript linter to project to run manually. Aim — avoid token fire on this manual task. Done
-2. Test my new API /v1 with Postman.
+-. Test my new API /v1 with Postman. Done
 3. Add 30-second timer to Race Lobby. Close lobby after 30 seconds when users do not join. After closing — remove users from race (if necessary).
 -. Decide how to rewrite Socket to Server-Sent Events (reason — use only Next.js server). Done with Socket
 -. Deploy project with Vercel. Done with Render
-6. Create test keys for API external usage and test in Postman (just make a plan for how it's possible).
+-. Create test keys for API external usage and test in Postman (just make a plan for how it's possible). Done

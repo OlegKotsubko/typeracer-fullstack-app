@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { winners } from "@/db/schema";
+import { db } from "@drizzle";
+import { winners } from "@drizzle/schema";
 import { asc } from "drizzle-orm";
 
 export async function LeaderboardSection() {

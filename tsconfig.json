@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@drizzle": ["./drizzle/index"],
+      "@drizzle/*": ["./drizzle/*"]
     }
   },
   "include": [
