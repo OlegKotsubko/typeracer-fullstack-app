@@ -1,19 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { isExactMatch, inputHasError } from "@/lib/typing-logic";
+import { isExactMatch } from "@/lib/typing-logic";
 
 export function TypingInput({
   currentWord,
   onSubmit,
   onInputChange,
-  onMistake,
   disabled,
 }: {
   currentWord: string;
   onSubmit: () => void;
   onInputChange: (value: string) => void;
-  onMistake: () => void;
   disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
@@ -31,28 +29,17 @@ export function TypingInput({
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newValue = e.target.value;
-
-    if (newValue.length > prevLengthRef.current) {
-      const newChar = newValue[newValue.length - 1];
-      const expectedChar = currentWord[newValue.length - 1];
-
-      if (newValue.length > currentWord.length || newChar !== expectedChar) {
-        onMistake();
-      } else if (inputHasError(newValue.slice(0, -1), currentWord)) {
-        onMistake();
-      }
-    }
-
     prevLengthRef.current = newValue.length;
 
     if (newValue.endsWith(" ")) {
       const typed = newValue.trimEnd();
       if (isExactMatch(typed, currentWord)) {
+        onInputChange(newValue); // send "hello " to server before clearing
         setValue("");
         prevLengthRef.current = 0;
         onSubmit();
-        return;
       }
+      // wrong word + space: ignore silently
       return;
     }
 
@@ -63,9 +50,9 @@ export function TypingInput({
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       if (isExactMatch(value, currentWord)) {
+        onInputChange(value + " "); // trailing space = submission signal for server
         setValue("");
         prevLengthRef.current = 0;
-        onInputChange("");
         onSubmit();
       }
       e.preventDefault();
