@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "socket": "tsx src/socket-server.ts",
-    "dev-all": "concurrently \"npm run dev\" \"npm run socket\"",
+    "dev": "concurrently \"next dev\" \"npm run socket\"",
     "build": "next build",
     "start": "tsx server.ts",
     "lint": "eslint",

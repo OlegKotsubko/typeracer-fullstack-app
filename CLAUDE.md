@@ -7,53 +7,75 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start both Next.js (3000) and Socket.io (3001) concurrently
-npm run socket       # Start Socket.io server (port 3001)
+npm run dev          # Both servers concurrently (Next.js port 3000 + Socket.io port 3001)
+npm run socket       # Socket.io server only (port 3001)
 npm run build        # Production build
+npm run start        # Production: unified Next.js + Socket.io server (server.ts)
 npm run lint         # ESLint
-npx drizzle-kit generate   # Generate migration from schema changes
-npx drizzle-kit migrate    # Run migrations against DATABASE_URL
-npx tsx drizzle/seed.ts     # Seed admin user (requires dev server running)
+npm run test         # All tests (Jest)
+npx jest src/lib/__tests__/typing-logic.test.ts  # Single test file
+
+npx drizzle-kit generate   # Generate migration SQL from schema changes
+npx drizzle-kit migrate    # Apply migrations against DATABASE_URL
+npx tsx drizzle/seed.ts    # Seed admin user (requires dev server running)
 ```
 
 ## Architecture
 
-TypeRacer is a real-time multiplayer typing race app built with Next.js 16 (App Router), Neon PostgreSQL, and Drizzle ORM.
+TypeRacer is a real-time multiplayer typing race app: Next.js 16 (App Router) + Neon PostgreSQL + Drizzle ORM + Socket.io.
 
-### Key layers
+### Next.js 16 "proxy" (not middleware)
 
-- **Database**: Neon serverless PostgreSQL via `@neondatabase/serverless`. Drizzle ORM with schemas in `drizzle/schemas/`, barrel at `drizzle/schema.ts`, connection in `drizzle/index.ts`. Config reads `DATABASE_URL` from `.env`.
-- **Auth**: BetterAuth with email/password. Three entry points:
-  - `src/lib/auth.ts` — server-side auth instance (BetterAuth + Drizzle adapter)
-  - `src/lib/auth-server.ts` — `getServerSession()` helper for API routes/server components
-  - `src/lib/auth-client.ts` — client-side hooks (`useSession`, `signIn`, `signUp`, `signOut`)
-  - Catch-all route at `src/app/api/auth/[...all]/route.ts`
-- **Middleware**: `src/middleware.ts` protects `/admin/*` routes — redirects unauthenticated users to `/admin/login`.
+Next.js 16 renames the middleware convention. The file is `src/proxy.ts` and exports `proxy()`, not `middleware()`. This protects `/admin/*` routes by checking the BetterAuth session cookie.
 
-### Data model
+### Two server modes
 
-Two application tables (plus BetterAuth's `user`, `session`, `account`, `verification`):
-- `races` — typing race with title, text content, and status (draft/active/completed)
-- `participants` — joined players tracking progress, mistakes, totalAttempted, timing
+- **Dev**: `npm run dev` runs Next.js and Socket.io as separate processes via `concurrently`. Socket.io listens on port 3001.
+- **Production**: `npm run start` executes `server.ts`, which embeds Socket.io directly into the Next.js HTTP server on a single port.
 
-### Real-time sync
+### Database
 
-- **WebSocket**: Socket.io server (`src/socket-server.ts`) on port 3001 manages race rooms, participant state, and progress broadcasting
-- **Client**: Singleton Socket.io client (`src/lib/socket.ts`) connects to the server. Progress updates debounced (300ms), completions sent immediately
-- **Race flow**: Lobby (3-player minimum) → Traffic light countdown (3s) → Racing → Finished
+Neon serverless PostgreSQL via `@neondatabase/serverless`. Drizzle ORM with:
+- Schemas in `drizzle/schemas/` (auth, races, billing)
+- Barrel export at `drizzle/schema.ts`
+- DB connection at `drizzle/index.ts`
 
-### Route structure
+Application tables: `races`, `participants`, `winners`, plus billing tables `plan`, `subscription`, `apiKey`.
 
-- `/` — public homepage, lists active races
-- `/race/[id]` — public race page (join + type)
-- `/admin/*` — authenticated admin panel (CRUD for races)
-- `/api/races/*` — REST API; write endpoints require session auth
-- `/api/docs` — OpenAPI/Swagger spec (local: http://localhost:3000/api/docs)
+Race status lifecycle: `draft` → `active` → `ongoing` → `completed`. On server startup, any `ongoing` races are reset to `active` (crash recovery).
 
-### UI
+### Auth
 
-shadcn/ui components in `src/components/ui/`, app components in `src/components/race/` and `src/components/layout/`. Tailwind CSS v4 with `@tailwindcss/postcss`. Uses `sonner` for toasts.
+BetterAuth with email/password. Three entry points:
+- `src/lib/auth.ts` — server-side BetterAuth instance
+- `src/lib/auth-server.ts` — `getServerSession()` for API routes and server components
+- `src/lib/auth-client.ts` — client hooks (`useSession`, `signIn`, `signUp`, `signOut`)
 
-### Path alias
+### API v1
 
-`@/*` maps to `./src/*` and `@drizzle/*` maps to `./drizzle/*` (tsconfig paths).
+All REST routes live under `/api/v1/`. Every handler wraps with `withApi()` from `src/app/api/v1/_lib/handler.ts`, which handles:
+- Auth resolution (session cookie **or** Bearer API key via `resolveCaller()` in `_lib/auth.ts`)
+- Zod validation for params, query, and body
+- Plan enforcement (`requirePlan` option)
+- Consistent error formatting
+
+API keys are hashed on storage; `resolveCaller` looks up by prefix+hash.
+
+### Billing / plans
+
+`plan` → `subscription` → user. Plan hierarchy: `free < pro < team`. `requirePlan(caller.plan, 'pro')` in `withApi` options gates endpoints by plan. Service logic in `src/server/services/subscriptions.ts`.
+
+### Real-time (Socket.io)
+
+- `RoomManager` (`src/lib/socket-server-logic.ts`) — in-memory state per race room: participants (max 3), countdown flag, completed count
+- `setupSocketHandlers` (`src/lib/socket-handlers.ts`) — wires Socket.io events: `join-race`, `progress-update`, `race-complete`, `disconnect`
+- Race starts automatically when a room fills to 3 players (3s countdown via `race-starting` event)
+- Client singleton at `src/lib/socket.ts`
+
+### Server services
+
+`src/server/services/` contains the DB query layer: `races.ts`, `participants.ts`, `winners.ts`, `api-keys.ts`, `subscriptions.ts`. API route handlers call these rather than querying Drizzle directly.
+
+### Tests
+
+Jest + ts-jest. Test files live in `__tests__/` subdirectories within `src`. The `@/` path alias is mapped in `jest.config.js`. Tests cover pure logic (typing, countdown, time utils, socket-server-logic) and API route integration (`src/app/api/v1/__tests__/`).
