@@ -77,6 +77,14 @@ export function setupSocketHandlers(
         if (rooms.isFull(raceId)) {
           const startAt = new Date(Date.now() + 3000);
           rooms.markCountdownStarted(raceId);
+
+          // Load race text into memory for server-side validation
+          const [race] = await db
+            .select({ text: races.text })
+            .from(races)
+            .where(eq(races.id, raceId));
+          if (race) rooms.setRaceText(raceId, race.text);
+
           await db.update(races).set({ status: "ongoing", startAt }).where(eq(races.id, raceId));
           io.to(`race:${raceId}`).emit("race-starting", { startAt: startAt.toISOString() });
         }
@@ -84,35 +92,76 @@ export function setupSocketHandlers(
     );
 
     socket.on(
-      "progress-update",
-      (data: { raceId: string; participantId: string; progress: number; mistakes: number; totalAttempted: number; wpm: number }) => {
-        const { raceId, participantId, progress, mistakes, totalAttempted, wpm } = data;
-        db.update(participants).set({ progress, mistakes, totalAttempted, wpm }).where(eq(participants.id, participantId)).then(() => {});
-        socket.to(`race:${raceId}`).emit("race-progress", { participantId, progress, mistakes, totalAttempted, wpm });
-      }
-    );
-
-    socket.on(
-      "race-complete",
-      async (data: { raceId: string; participantId: string; timeSeconds: number; wpm: number }) => {
+      "keystroke",
+      async (data: { raceId: string; participantId: string; input: string }) => {
         try {
-          const { raceId, participantId, timeSeconds, wpm } = data;
-          const completedAt = new Date();
+          const { raceId, participantId, input } = data;
 
-          const roomParticipant = rooms.getParticipants(raceId).find((p) => p.id === participantId);
-          const [race] = await db.select({ title: races.title }).from(races).where(eq(races.id, raceId));
-
-          await db.update(participants).set({ progress: 100, completedAt }).where(eq(participants.id, participantId));
-          io.to(`race:${raceId}`).emit("participant-completed", { participantId, completedAt: completedAt.toISOString() });
-
-          if (race && roomParticipant) {
-            await checkAndInsertWinner(db, winners, { nickname: roomParticipant.nickname, raceTitle: race.title, timeSeconds, wpm, completedAt });
+          // Lazy-stamp startedAt on first keystroke
+          const participant = rooms.getParticipants(raceId).find((p) => p.id === participantId);
+          if (participant && participant.startedAt === 0) {
+            rooms.setStartedAt(raceId);
           }
 
-          const { allDone } = rooms.markParticipantDone(raceId);
-          if (allDone) await endRace(db, rooms, io, raceId, races, participants);
+          const result = rooms.handleKeystroke(raceId, participantId, input);
+          if (!result) return;
+
+          const { progress, wpm, mistakes, wordIndex, completed, timeSeconds, totalCorrectChars } = result;
+
+          db.update(participants)
+            .set({ progress, mistakes, wpm })
+            .where(eq(participants.id, participantId))
+            .then(() => {});
+
+          io.to(`race:${raceId}`).emit("race-progress", {
+            participantId,
+            progress,
+            wpm,
+            mistakes,
+            wordIndex,
+            totalCorrectChars,
+          });
+
+          if (completed) {
+            const completedAt = new Date();
+
+            await db
+              .update(participants)
+              .set({ progress: 100, completedAt })
+              .where(eq(participants.id, participantId));
+
+            io.to(`race:${raceId}`).emit("participant-completed", {
+              participantId,
+              completedAt: completedAt.toISOString(),
+            });
+
+            io.to(`race:${raceId}`).emit("race-complete", {
+              participantId,
+              timeSeconds,
+              wpm,
+            });
+
+            const roomParticipant = rooms.getParticipants(raceId).find((p) => p.id === participantId);
+            const [race] = await db
+              .select({ title: races.title })
+              .from(races)
+              .where(eq(races.id, raceId));
+
+            if (race && roomParticipant && timeSeconds !== undefined) {
+              await checkAndInsertWinner(db, winners, {
+                nickname: roomParticipant.nickname,
+                raceTitle: race.title,
+                timeSeconds,
+                wpm,
+                completedAt,
+              });
+            }
+
+            const { allDone } = rooms.markParticipantDone(raceId);
+            if (allDone) await endRace(db, rooms, io, raceId, races, participants);
+          }
         } catch (err) {
-          console.error("[race-complete] ERROR:", err);
+          console.error("[keystroke] ERROR:", err);
         }
       }
     );
