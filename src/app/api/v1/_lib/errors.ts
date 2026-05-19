@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import { ServiceError } from "@/server/services/errors";
+import { NextResponse } from "next/server"
+
+import { ServiceError } from "@/server/services/errors"
 
 export function errorEnvelope(err: unknown): NextResponse {
   if (err instanceof ServiceError) {
@@ -12,11 +13,11 @@ export function errorEnvelope(err: unknown): NextResponse {
         },
       },
       { status: err.status }
-    );
+    )
   }
-  console.error("[v1] unhandled error:", err);
+  console.error("[v1] unhandled error:", err)
   return NextResponse.json(
     { error: { code: "INTERNAL_ERROR", message: "Internal server error" } },
     { status: 500 }
-  );
+  )
 }

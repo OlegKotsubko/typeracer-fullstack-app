@@ -1,6 +1,7 @@
-import Link from "next/link";
-import { Header } from "@/components/layout/header";
-import { SiteFooter } from "@/components/layout/site-footer";
+import Link from "next/link"
+
+import { Header } from "@/components/layout/header"
+import { SiteFooter } from "@/components/layout/site-footer"
 
 export default function NotFound() {
   return (
@@ -30,9 +31,9 @@ export default function NotFound() {
               PAGE NOT FOUND
             </h2>
             <p className="text-base md:text-lg text-gray-400 font-mono">
-              Looks like you've hit a dead end on the track.
+              Looks like you&apos;ve hit a dead end on the track.
               <br />
-              The page you're looking for doesn't exist.
+              The page you&apos;re looking for doesn&apos;t exist.
             </p>
           </div>
 
@@ -40,7 +41,10 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link
               href="/"
-              className="chamfer h-12 px-8 inline-flex items-center justify-center font-mono uppercase tracking-[0.12em] text-sm font-semibold text-(--fg) shadow-[inset_0_0_0_1px_var(--green)] hover:text-neon-green hover:shadow-[inset_0_0_0_2px_var(--green),0_0_20px_var(--green)] transition-all duration-200"
+              className="chamfer h-12 px-8 inline-flex items-center justify-center font-mono
+               uppercase tracking-[0.12em] text-sm font-semibold text-(--fg) shadow-[inset_0_0_0_1px_var(--green)]
+               hover:text-neon-green hover:shadow-[inset_0_0_0_2px_var(--green),0_0_20px_var(--green)]
+               transition-all duration-200"
               style={{
                 color: "var(--green)",
                 boxShadow:
@@ -68,5 +72,5 @@ export default function NotFound() {
       </div>
       <SiteFooter />
     </main>
-  );
+  )
 }

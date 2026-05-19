@@ -1,6 +1,7 @@
-import { db } from "@drizzle";
-import { plan } from "@drizzle/schema";
-import { asc } from "drizzle-orm";
+import { asc } from "drizzle-orm"
+
+import { db } from "@drizzle"
+import { plan } from "@drizzle/schema"
 
 const FEATURES: Record<string, string[]> = {
   free: [
@@ -20,18 +21,20 @@ const FEATURES: Record<string, string[]> = {
     "Team leaderboards & analytics",
     "Highest API throughput",
   ],
-};
+}
 
 function priceLabel(cents: number) {
-  if (cents === 0) return "Free";
-  return `$${(cents / 100).toFixed(0)}`;
+  if (cents === 0) return "Free"
+  return `$${(cents / 100).toFixed(0)}`
 }
 
 export async function PricingSection() {
-  const plans = await db.select().from(plan).orderBy(asc(plan.monthlyPriceCents));
+  const plans = await db.select().from(plan).orderBy(asc(plan.monthlyPriceCents))
 
   return (
-    <section id="pricing" className="sec" style={{ paddingTop: 0 }}>
+    <section id="pricing"
+      className="sec"
+      style={{ paddingTop: 0 }}>
       <div className="wrap">
         <div className="sec-head">
           <div>
@@ -52,9 +55,13 @@ export async function PricingSection() {
                 Beta
               </span>
             </div>
-            <h2>Race free, scale when you need it</h2>
+            <h2>
+              Race free, scale when you need it
+            </h2>
           </div>
-          <div className="meta">Plans &amp; API access</div>
+          <div className="meta">
+            Plans &amp; API access
+          </div>
         </div>
 
         <div
@@ -62,17 +69,21 @@ export async function PricingSection() {
           style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
         >
           {plans.map((p, i) => {
-            const features = FEATURES[p.id] ?? [];
-            const limits = p.limits ?? {};
-            const isLast = i === plans.length - 1;
+            const features = FEATURES[p.id] ?? []
+            const limits = p.limits ?? {}
+            const isLast = i === plans.length - 1
             return (
               <div
                 key={p.id}
                 className="ben"
                 style={isLast ? { borderRight: "none" } : undefined}
               >
-                <div className="ben-idx">{`// ${p.id}`}</div>
-                <h4>{p.name}</h4>
+                <div className="ben-idx">
+                  {`// ${p.id}`}
+                </div>
+                <h4>
+                  {p.name}
+                </h4>
                 <p style={{ fontSize: "1.6rem", margin: "0.4rem 0" }}>
                   {priceLabel(p.monthlyPriceCents)}
                   {p.monthlyPriceCents > 0 && (
@@ -84,17 +95,27 @@ export async function PricingSection() {
                 </p>
                 <ul style={{ margin: "0.5rem 0 0.75rem", paddingLeft: "1rem" }}>
                   {features.map((f) => (
-                    <li key={f}>{f}</li>
+                    <li key={f}>
+                      {f}
+                    </li>
                   ))}
                 </ul>
                 <p style={{ fontSize: "0.8rem", opacity: 0.75 }}>
-                  {limits.racesPerDay ?? "—"} races/day ·{" "}
-                  {limits.apiRequestsPerMinute ?? "—"} req/min ·{" "}
-                  {limits.maxParticipantsPerRace ?? "—"} racers/lobby
+                  {limits.racesPerDay ?? "—"}
+                  {' '}
+                  races/day ·
+                  {" "}
+                  {limits.apiRequestsPerMinute ?? "—"}
+                  {' '}
+                  req/min ·
+                  {" "}
+                  {limits.maxParticipantsPerRace ?? "—"}
+                  {' '}
+                  racers/lobby
                 </p>
                 <div className="ben-bar" />
               </div>
-            );
+            )
           })}
         </div>
 
@@ -104,5 +125,5 @@ export async function PricingSection() {
         </p>
       </div>
     </section>
-  );
+  )
 }

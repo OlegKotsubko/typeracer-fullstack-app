@@ -25,7 +25,7 @@ Add `startAt` to `races` and `wpm` to `participants`.
 In `src/db/schema.ts`, add inside the `races` table definition after `status`:
 
 ```ts
-startAt: timestamp("start_at"),
+startAt: timestamp("start_at")
 ```
 
 - [ ] **Step 2: Add `wpm` column to `participants` table**
@@ -634,10 +634,10 @@ import { getTrafficLightPhase, TrafficLightPhase } from "@/lib/countdown";
 
 export function TrafficLight({
   startAt,
-  onGo,
+                               onGoAction,
 }: {
   startAt: Date;
-  onGo: () => void;
+  onGoAction: () => void;
 }) {
   const [phase, setPhase] = useState<TrafficLightPhase>("waiting");
 
@@ -648,12 +648,12 @@ export function TrafficLight({
 
       if (newPhase === "go") {
         clearInterval(interval);
-        onGo();
+        onGoAction();
       }
     }, 100);
 
     return () => clearInterval(interval);
-  }, [startAt, onGo]);
+  }, [startAt, onGoAction]);
 
   const isActive = (color: "red" | "yellow" | "green") => phase === color;
 
@@ -1238,11 +1238,11 @@ import { secondsToMinutesSeconds } from "@/lib/time-utils";
 export function RaceTimer({
   durationSeconds,
   startAt,
-  onTimeExpired,
+                            onTimeExpiredAction,
 }: {
   durationSeconds: number;
   startAt: Date;
-  onTimeExpired: () => void;
+  onTimeExpiredAction: () => void;
 }) {
   const [remaining, setRemaining] = useState(durationSeconds);
 
@@ -1253,14 +1253,14 @@ export function RaceTimer({
       setRemaining(timeRemaining);
 
       if (timeRemaining <= 0) {
-        onTimeExpired();
+        onTimeExpiredAction();
       }
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [durationSeconds, startAt, onTimeExpired]);
+  }, [durationSeconds, startAt, onTimeExpiredAction]);
 
   const { minutes, seconds } = secondsToMinutesSeconds(remaining);
   const isExpired = remaining === 0;
@@ -1546,7 +1546,7 @@ export function RaceInterface({
       <h1 className="text-3xl font-bold mb-6">{raceTitle}</h1>
 
       {state === "idle" && (
-        <JoinDialog onJoin={handleJoin} />
+        <JoinDialog onJoinAction={handleJoin} />
       )}
 
       {state === "lobby" && (
@@ -1554,7 +1554,7 @@ export function RaceInterface({
       )}
 
       {state === "countdown" && startAt && (
-        <TrafficLight startAt={startAt} onGo={handleGo} />
+        <TrafficLight startAt={startAt} onGoAction={handleGo} />
       )}
 
       {state === "racing" && (
@@ -1563,7 +1563,7 @@ export function RaceInterface({
             <RaceTimer
               durationSeconds={durationSeconds}
               startAt={startAt}
-              onTimeExpired={handleTimeExpired}
+              onTimeExpiredAction={handleTimeExpired}
             />
           )}
           <ProgressPanel

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { validateInput } from "@/lib/typing-logic";
+import { validateInput } from "@/lib/typing-logic"
 
 export function TextDisplay({
   words,
@@ -23,31 +23,38 @@ export function TextDisplay({
       {words.map((word, i) => {
         if (i < completedWords) {
           return (
-            <span key={i} className="w done">
+            <span key={i}
+              className="w done">
               {word.split("").map((char, ci) => (
-                <span key={ci} className="ch ok">{char}</span>
-              ))}{" "}
+                <span key={ci}
+                  className="ch ok">
+                  {char}
+                </span>
+              ))}
+              {" "}
             </span>
-          );
+          )
         }
 
         if (i === currentWordIndex) {
-          const charResults = validateInput(currentInput, word);
-          const caretIdx = currentInput.length;
+          const charResults = validateInput(currentInput, word)
+          const caretIdx = currentInput.length
           return (
-            <span key={i} className="w cur">
+            <span key={i}
+              className="w cur">
               {word.split("").map((char, ci) => {
-                const result = charResults[ci];
-                let cls = "ch";
+                const result = charResults[ci]
+                let cls = "ch"
                 if (result) {
-                  cls += result.status === "correct" ? " ok" : " err";
+                  cls += result.status === "correct" ? " ok" : " err"
                 }
-                if (ci === caretIdx) cls += " caret";
+                if (ci === caretIdx) cls += " caret"
                 return (
-                  <span key={ci} className={cls}>
+                  <span key={ci}
+                    className={cls}>
                     {char}
                   </span>
-                );
+                )
               })}
               {currentInput.length > word.length && (
                 <span className="ch err">
@@ -56,17 +63,22 @@ export function TextDisplay({
               )}
               {" "}
             </span>
-          );
+          )
         }
 
         return (
-          <span key={i} className="w">
+          <span key={i}
+            className="w">
             {word.split("").map((char, ci) => (
-              <span key={ci} className="ch">{char}</span>
-            ))}{" "}
+              <span key={ci}
+                className="ch">
+                {char}
+              </span>
+            ))}
+            {" "}
           </span>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

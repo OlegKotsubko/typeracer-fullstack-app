@@ -1,5 +1,6 @@
-import { pgTable, text, timestamp, integer, uuid, jsonb, index } from "drizzle-orm/pg-core";
-import { user } from "./auth";
+import { pgTable, text, timestamp, integer, uuid, jsonb, index } from "drizzle-orm/pg-core"
+
+import { user } from "./auth"
 
 export type PlanLimits = {
   racesPerDay?: number;
@@ -17,7 +18,7 @@ export const plan = pgTable("plan", {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-});
+})
 
 export const subscription = pgTable(
   "subscription",
@@ -44,7 +45,7 @@ export const subscription = pgTable(
       .notNull(),
   },
   (table) => [index("subscription_userId_idx").on(table.userId)]
-);
+)
 
 export const apiKey = pgTable(
   "api_key",
@@ -64,4 +65,4 @@ export const apiKey = pgTable(
     index("api_key_userId_idx").on(table.userId),
     index("api_key_prefix_idx").on(table.prefix),
   ]
-);
+)

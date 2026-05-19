@@ -1,16 +1,19 @@
-import { getServerSession } from "@/lib/auth-server";
-import { redirect } from "next/navigation";
-import { AdminShell } from "@/components/admin/admin-shell";
+import { redirect } from "next/navigation"
+
+import { getServerSession } from "@/lib/auth-server"
+import { AdminShell } from "@/components/admin/admin-shell"
 
 export default async function AdminProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession()
   if (!session) {
-    redirect("/admin/login");
+    redirect("/admin/login")
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  return <AdminShell>
+    {children}
+  </AdminShell>
 }

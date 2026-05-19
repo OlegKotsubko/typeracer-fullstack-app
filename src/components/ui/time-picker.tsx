@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 interface TimePickerProps {
   label?: string;
@@ -21,25 +21,29 @@ export function TimePicker({
   disabled = false,
 }: TimePickerProps) {
   const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+    const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10)
     if (!isNaN(value) && value >= 0) {
-      onMinutesChange(value);
+      onMinutesChange(value)
     }
-  };
+  }
 
   const handleSecondsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+    const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10)
     if (!isNaN(value) && value >= 0 && value <= 59) {
-      onSecondsChange(value);
+      onSecondsChange(value)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col gap-2">
-      {label && <Label>{label}</Label>}
+      {label && <Label>
+        {label}
+      </Label>}
       <div className="flex items-center gap-2">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">Minutes</label>
+          <label className="text-xs text-muted-foreground">
+Minutes
+          </label>
           <Input
             type="number"
             value={minutes}
@@ -50,9 +54,13 @@ export function TimePicker({
             placeholder="0"
           />
         </div>
-        <span className="text-2xl font-bold mt-4">:</span>
+        <span className="text-2xl font-bold mt-4">
+:
+        </span>
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">Seconds</label>
+          <label className="text-xs text-muted-foreground">
+Seconds
+          </label>
           <Input
             type="number"
             value={seconds}
@@ -69,5 +77,5 @@ export function TimePicker({
         Format: MM : SS (0-59 seconds)
       </p>
     </div>
-  );
+  )
 }

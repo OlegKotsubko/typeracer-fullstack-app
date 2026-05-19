@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
+import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
 const Select = SelectPrimitive.Root
 
@@ -87,7 +87,9 @@ function SelectContent({
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          <SelectPrimitive.List>
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
