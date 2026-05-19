@@ -13,11 +13,11 @@
 ### Task 1: Update Database Schema
 
 **Files:**
-- Modify: `src/db/schema.ts:88-100`
+- Modify: `drizzle/schemas/races.ts`
 
 - [ ] **Step 1: Add durationSeconds column to races table**
 
-Open `src/db/schema.ts` and modify the `races` table definition:
+Open `drizzle/schemas/races.ts` and modify the `races` table definition:
 
 ```typescript
 export const races = pgTable("races", {
@@ -25,9 +25,10 @@ export const races = pgTable("races", {
   title: text("title").notNull(),
   text: text("text").notNull(),
   durationSeconds: integer("duration_seconds"),
-  status: text("status", { enum: ["draft", "active", "completed"] })
+  status: text("status", { enum: ["draft", "active", "ongoing", "completed"] })
     .notNull()
     .default("draft"),
+  startAt: timestamp("start_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -55,7 +56,7 @@ Expected: Migration applies successfully to your DATABASE_URL
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/db/schema.ts drizzle/
+git add drizzle/schemas/races.ts drizzle/
 git commit -m "feat: add durationSeconds to races table"
 ```
 
@@ -305,7 +306,7 @@ Replace the `handleSubmit` function (lines 31-49):
 
     const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds);
 
-    const res = await fetch("/api/races", {
+    const res = await fetch("/api/v1/races", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
@@ -316,7 +317,7 @@ Replace the `handleSubmit` function (lines 31-49):
       router.push("/admin/races");
     } else {
       const data = await res.json();
-      toast.error(data.error ?? "Failed to create race");
+      toast.error(data.error?.message ?? "Failed to create race");
     }
     setLoading(false);
   }
@@ -403,9 +404,9 @@ Replace the `useEffect` hook (lines 33-48):
 ```typescript
   useEffect(() => {
     async function fetchRace() {
-      const res = await fetch(`/api/races/${params.id}`);
+      const res = await fetch(`/api/v1/races/${params.id}`);
       if (res.ok) {
-        const race = await res.json();
+        const { data: race } = await res.json();
         setTitle(race.title);
         setText(race.text);
         setStatus(race.status);
@@ -441,7 +442,7 @@ Replace the `handleSubmit` function (lines 50-68):
 
     const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds);
 
-    const res = await fetch(`/api/races/${params.id}`, {
+    const res = await fetch(`/api/v1/races/${params.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
@@ -452,7 +453,7 @@ Replace the `handleSubmit` function (lines 50-68):
       router.push("/admin/races");
     } else {
       const data = await res.json();
-      toast.error(data.error ?? "Failed to update race");
+      toast.error(data.error?.message ?? "Failed to update race");
     }
     setLoading(false);
   }
@@ -529,7 +530,7 @@ export function RaceTimer({
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [durationSeconds, startedAt, onTimeExpired]);
+  }, [durationSeconds, startedAt, onTimeExpiredAction]);
 
   if (remaining === null) return null;
 
@@ -645,9 +646,9 @@ git commit -m "feat: integrate countdown timer into race page"
 ### Task 8: Add Server-Side Validation
 
 **Files:**
-- Modify: `src/app/api/races/[id]/route.ts`
+- Modify: `src/app/api/v1/races/[id]/route.ts`
 
-- [ ] **Step 1: Add validation logic to PATCH handler**
+- [x] **Step 1: Add validation logic to PATCH handler**
 
 Find the PATCH handler in `src/app/api/races/[id]/route.ts`. Before processing the update, add this validation after checking authentication:
 
@@ -686,7 +687,7 @@ Create a race with a short duration (e.g., 5 seconds). Join it and wait until th
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/app/api/races/\[id\]/route.ts
+git add src/app/api/v1/races/\[id\]/route.ts
 git commit -m "feat: add server-side duration validation to PATCH endpoint"
 ```
 

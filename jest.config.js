@@ -5,6 +5,8 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@drizzle/(.*)$': '<rootDir>/drizzle/$1',
+    '^@drizzle$': '<rootDir>/drizzle/index',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
 }

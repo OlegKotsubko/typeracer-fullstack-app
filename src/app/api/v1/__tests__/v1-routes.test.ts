@@ -1,4 +1,9 @@
-jest.mock("@drizzle", () => ({ db: {} }))
+jest.mock("@drizzle", () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const resolve = (r: any) => r([{ count: 0 }])
+  const chain = { then: resolve, where: jest.fn().mockReturnValue({ then: resolve }) }
+  return { db: { select: jest.fn().mockReturnValue({ from: jest.fn().mockReturnValue(chain) }) } }
+})
 jest.mock("@/server/services/subscriptions", () => ({
   requirePlan: jest.fn(),
   getActivePlan: jest.fn(),
@@ -101,7 +106,7 @@ describe("GET /api/v1/races", () => {
     (racesSvc.listRaces as jest.Mock).mockResolvedValue([{ id: RACE_ID }])
     const res = await racesList(req("/api/v1/races"), ctx())
     expect(res.status).toBe(200)
-    expect(await res.json()).toEqual({ data: [{ id: RACE_ID }] })
+    expect(await res.json()).toEqual(expect.objectContaining({ data: [{ id: RACE_ID }] }))
   })
 })
 
@@ -212,7 +217,7 @@ describe("/api/v1/races/{id}/participants", () => {
       ctx({ id: RACE_ID })
     )
     expect(res.status).toBe(200)
-    expect(participantsSvc.listParticipants).toHaveBeenCalledWith(RACE_ID)
+    expect(participantsSvc.listParticipants).toHaveBeenCalledWith(RACE_ID, 20, 0)
   })
 
   it("POST joins (anonymous allowed)", async () => {
@@ -288,7 +293,7 @@ describe("GET /api/v1/winners", () => {
     (winnersSvc.listWinners as jest.Mock).mockResolvedValue([])
     const res = await winnersGet(req("/api/v1/winners?limit=5"), ctx())
     expect(res.status).toBe(200)
-    expect(winnersSvc.listWinners).toHaveBeenCalledWith(5)
+    expect(winnersSvc.listWinners).toHaveBeenCalledWith(5, 0)
   })
 
   it("rejects out-of-range limit", async () => {
@@ -330,7 +335,7 @@ describe("/api/v1/me/api-keys", () => {
     (apiKeysSvc.listApiKeys as jest.Mock).mockResolvedValue([{ id: KEY_ID }])
     const res = await apiKeysList(req("/api/v1/me/api-keys"), ctx())
     expect(res.status).toBe(200)
-    expect(apiKeysSvc.listApiKeys).toHaveBeenCalledWith("user-1")
+    expect(apiKeysSvc.listApiKeys).toHaveBeenCalledWith("user-1", 20, 0)
   })
 
   it("POST 403 when caller is api_key", async () => {
