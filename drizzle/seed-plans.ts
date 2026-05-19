@@ -1,12 +1,13 @@
-import "dotenv/config";
+import "dotenv/config"
 
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import * as schema from "./schema";
-import { plan } from "./schema";
+import { neon } from "@neondatabase/serverless"
+import { drizzle } from "drizzle-orm/neon-http"
 
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle({ client: sql, schema });
+import * as schema from "./schema"
+import { plan } from "./schema"
+
+const sql = neon(process.env.DATABASE_URL!)
+const db = drizzle({ client: sql, schema })
 
 const PLANS: (typeof plan.$inferInsert)[] = [
   {
@@ -39,7 +40,7 @@ const PLANS: (typeof plan.$inferInsert)[] = [
       maxParticipantsPerRace: 25,
     },
   },
-];
+]
 
 async function seed() {
   for (const p of PLANS) {
@@ -53,9 +54,9 @@ async function seed() {
           monthlyPriceCents: p.monthlyPriceCents,
           limits: p.limits,
         },
-      });
-    console.log(`upserted plan: ${p.id}`);
+      })
+    console.log(`upserted plan: ${p.id}`)
   }
 }
 
-seed().then(() => process.exit(0));
+seed().then(() => process.exit(0))

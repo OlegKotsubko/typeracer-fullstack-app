@@ -1,25 +1,26 @@
-import { db } from "@drizzle";
-import { races } from "@drizzle/schema";
-import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
-import { Header } from "@/components/layout/header";
-import { RaceInterface } from "@/components/race/race-interface";
+import { eq } from "drizzle-orm"
+import { notFound } from "next/navigation"
+
+import { db } from "@drizzle"
+import { races } from "@drizzle/schema"
+import { Header } from "@/components/layout/header"
+import { RaceInterface } from "@/components/race/race-interface"
 
 export default async function RacePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  let race;
+  const { id } = await params
+  let race
   try {
-    [race] = await db.select().from(races).where(eq(races.id, id));
+    [race] = await db.select().from(races).where(eq(races.id, id))
   } catch {
-    notFound();
+    notFound()
   }
 
   if (!race || race.status !== "active") {
-    notFound();
+    notFound()
   }
 
   return (
@@ -34,5 +35,5 @@ export default async function RacePage({
         />
       </main>
     </>
-  );
+  )
 }

@@ -499,13 +499,13 @@ import { secondsToMinutesSeconds } from "@/lib/time-utils";
 interface RaceTimerProps {
   durationSeconds: number | null;
   startedAt: Date | null;
-  onTimeExpired: () => void;
+  onTimeExpiredAction: () => void;
 }
 
 export function RaceTimer({
   durationSeconds,
   startedAt,
-  onTimeExpired,
+                            onTimeExpiredAction,
 }: RaceTimerProps) {
   const [remaining, setRemaining] = useState<number | null>(null);
 
@@ -521,7 +521,7 @@ export function RaceTimer({
       setRemaining(timeRemaining);
 
       if (timeRemaining <= 0) {
-        onTimeExpired();
+        onTimeExpiredAction();
       }
     };
 
@@ -614,7 +614,7 @@ Add the timer component near the top of the race interface (prominently visible)
   <RaceTimer
     durationSeconds={race.durationSeconds}
     startedAt={race.participants[yourParticipantIndex].startedAt}
-    onTimeExpired={handleTimeExpired}
+  onTimeExpiredAction={handleTimeExpired}
   />
 )}
 ```

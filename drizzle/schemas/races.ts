@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, real, uuid, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, real, uuid, index } from "drizzle-orm/pg-core"
 
 export const races = pgTable("races", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -14,7 +14,7 @@ export const races = pgTable("races", {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-});
+})
 
 export const participants = pgTable(
   "participants",
@@ -33,7 +33,7 @@ export const participants = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [index("participants_raceId_idx").on(table.raceId)]
-);
+)
 
 export const winners = pgTable("winners", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -43,4 +43,4 @@ export const winners = pgTable("winners", {
   wpm: integer("wpm").notNull(),
   completedAt: timestamp("completed_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+})

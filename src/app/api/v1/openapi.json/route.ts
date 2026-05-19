@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
 const spec = {
   openapi: "3.1.0",
   info: {
     title: "TypeRacer API",
     version: "1.0.0",
-    description:
-      "Versioned REST API for TypeRacer. Supports session (cookie) auth from the web UI and `Authorization: Bearer tr_live_...` API keys for third-party clients.",
+    // eslint-disable-next-line max-len
+    description: "Versioned REST API for TypeRacer. Supports session (cookie) auth from the web UI and `Authorization: Bearer tr_live_...` API keys for third-party clients.",
   },
   servers: [{ url: "/api/v1" }],
   security: [{ bearerAuth: [] }, { sessionCookie: [] }],
@@ -562,8 +562,8 @@ const spec = {
       },
     },
   },
-};
+}
 
 export function GET() {
-  return NextResponse.json(spec);
+  return NextResponse.json(spec)
 }

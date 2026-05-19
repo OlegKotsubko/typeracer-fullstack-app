@@ -15,18 +15,18 @@ const STATUS: Record<ServiceErrorCode, number> = {
   UNAUTHENTICATED: 401,
   PLAN_REQUIRED: 402,
   RATE_LIMITED: 429,
-};
+}
 
 export class ServiceError extends Error {
-  readonly code: ServiceErrorCode;
-  readonly status: number;
-  readonly details?: unknown;
+  readonly code: ServiceErrorCode
+  readonly status: number
+  readonly details?: unknown
 
   constructor(code: ServiceErrorCode, message: string, details?: unknown) {
-    super(message);
-    this.name = "ServiceError";
-    this.code = code;
-    this.status = STATUS[code];
-    this.details = details;
+    super(message)
+    this.name = "ServiceError"
+    this.code = code
+    this.status = STATUS[code]
+    this.details = details
   }
 }

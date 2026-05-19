@@ -1,15 +1,16 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+
+import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -17,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 
 type Race = {
   id: string;
@@ -37,40 +38,46 @@ type Participant = {
 };
 
 export default function AdminRaceMonitorPage() {
-  const params = useParams();
-  const [race, setRace] = useState<Race | null>(null);
-  const [participants, setParticipants] = useState<Participant[]>([]);
+  const params = useParams()
+  const [race, setRace] = useState<Race | null>(null)
+  const [participants, setParticipants] = useState<Participant[]>([])
 
   useEffect(() => {
     fetch(`/api/v1/races/${params.id}`)
       .then((res) => res.json())
-      .then(({ data }) => setRace(data));
-  }, [params.id]);
+      .then(({ data }) => setRace(data))
+  }, [params.id])
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const res = await fetch(`/api/v1/races/${params.id}/participants`);
-      if (cancelled) return;
+      const res = await fetch(`/api/v1/races/${params.id}/participants`)
+      if (cancelled) return
       if (res.ok) {
-        const { data } = await res.json();
-        setParticipants(data);
+        const { data } = await res.json()
+        setParticipants(data)
       }
-    })();
-    return () => { cancelled = true; };
-  }, [params.id]);
+    })()
+    return () => { cancelled = true }
+  }, [params.id])
 
   if (!race) {
-    return <p className="text-muted-foreground">Loading...</p>;
+    return <p className="text-muted-foreground">
+      Loading...
+    </p>
   }
 
-  const sorted = [...participants].sort((a, b) => b.progress - a.progress);
+  const sorted = [...participants].sort((a, b) => b.progress - a.progress)
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-3xl font-bold">{race.title}</h1>
-        <Badge>{race.status}</Badge>
+        <h1 className="text-3xl font-bold">
+          {race.title}
+        </h1>
+        <Badge>
+          {race.status}
+        </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -81,7 +88,9 @@ export default function AdminRaceMonitorPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{participants.length}</p>
+            <p className="text-3xl font-bold">
+              {participants.length}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -111,15 +120,25 @@ export default function AdminRaceMonitorPage() {
       </div>
 
       {sorted.length === 0 ? (
-        <p className="text-muted-foreground">No participants yet.</p>
+        <p className="text-muted-foreground">
+          No participants yet.
+        </p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nickname</TableHead>
-              <TableHead>Progress</TableHead>
-              <TableHead>Accuracy</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>
+                Nickname
+              </TableHead>
+              <TableHead>
+                Progress
+              </TableHead>
+              <TableHead>
+                Accuracy
+              </TableHead>
+              <TableHead>
+                Status
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -127,34 +146,49 @@ export default function AdminRaceMonitorPage() {
               const accuracy =
                 p.totalAttempted > 0
                   ? Math.round(
-                      ((p.totalAttempted - p.mistakes) / p.totalAttempted) * 100
-                    )
-                  : 100;
+                    ((p.totalAttempted - p.mistakes) / p.totalAttempted) * 100
+                  )
+                  : 100
               return (
                 <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.nickname}</TableCell>
+                  <TableCell className="font-medium">
+                    {p.nickname}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Progress value={p.progress} className="h-2 w-24" />
-                      <span className="text-sm">{p.progress}%</span>
+                      <Progress value={p.progress}
+                        className="h-2 w-24" />
+                      <span className="text-sm">
+                        {p.progress}
+                        %
+                      </span>
                     </div>
                   </TableCell>
-                  <TableCell>{accuracy}%</TableCell>
+                  <TableCell>
+                    {accuracy}
+                    %
+                  </TableCell>
                   <TableCell>
                     {p.completedAt ? (
-                      <Badge variant="default">Completed</Badge>
+                      <Badge variant="default">
+                        Completed
+                      </Badge>
                     ) : p.startedAt ? (
-                      <Badge variant="secondary">Racing</Badge>
+                      <Badge variant="secondary">
+                        Racing
+                      </Badge>
                     ) : (
-                      <Badge variant="outline">Joined</Badge>
+                      <Badge variant="outline">
+                        Joined
+                      </Badge>
                     )}
                   </TableCell>
                 </TableRow>
-              );
+              )
             })}
           </TableBody>
         </Table>
       )}
     </div>
-  );
+  )
 }

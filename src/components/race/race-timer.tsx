@@ -1,47 +1,53 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { secondsToMinutesSeconds } from "@/lib/time-utils";
+import { useEffect, useState } from "react"
+
+import { secondsToMinutesSeconds } from "@/lib/time-utils"
 
 export function RaceTimer({
   durationSeconds,
   startAt,
-  onTimeExpired,
+  onTimeExpiredAction,
 }: {
   durationSeconds: number;
   startAt: Date;
-  onTimeExpired: () => void;
+  onTimeExpiredAction: () => void;
 }) {
-  const [remaining, setRemaining] = useState(durationSeconds);
+  const [remaining, setRemaining] = useState(durationSeconds)
 
   useEffect(() => {
     const updateTimer = () => {
-      const elapsed = Math.floor((Date.now() - startAt.getTime()) / 1000);
-      const timeRemaining = Math.max(0, durationSeconds - elapsed);
-      setRemaining(timeRemaining);
+      const elapsed = Math.floor((Date.now() - startAt.getTime()) / 1000)
+      const timeRemaining = Math.max(0, durationSeconds - elapsed)
+      setRemaining(timeRemaining)
       if (timeRemaining <= 0) {
-        onTimeExpired();
+        onTimeExpiredAction()
       }
-    };
+    }
 
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, [durationSeconds, startAt, onTimeExpired]);
+    updateTimer()
+    const interval = setInterval(updateTimer, 1000)
+    return () => clearInterval(interval)
+  }, [durationSeconds, startAt, onTimeExpiredAction])
 
-  const { minutes, seconds } = secondsToMinutesSeconds(remaining);
-  const isExpired = remaining === 0;
-  const lowTime = remaining > 0 && remaining <= 10;
+  const { minutes, seconds } = secondsToMinutesSeconds(remaining)
+  const isExpired = remaining === 0
+  const lowTime = remaining > 0 && remaining <= 10
 
   return (
-    <div className="hud" style={{ marginBottom: 12 }}>
-      <div className={`hud-cell${isExpired || lowTime ? " warn" : ""}`} style={{ borderRight: "none", gridColumn: "1 / -1" }}>
-        <div className="k">Time Remaining</div>
+    <div className="hud mb-1">
+      <div className={`hud-cell${isExpired || lowTime ? " warn" : ""}`}
+        style={{ borderRight: "none", gridColumn: "1 / -1" }}>
+        <div className="k">
+            Time Remaining
+        </div>
         <div className="v">
-          {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+          {String(minutes).padStart(2, "0")}
+          :
+          {String(seconds).padStart(2, "0")}
           {isExpired && " // EXPIRED"}
         </div>
       </div>
     </div>
-  );
+  )
 }

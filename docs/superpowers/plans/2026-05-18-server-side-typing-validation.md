@@ -999,14 +999,14 @@ export function RaceInterface({
             : "// RUN COMPLETE"}
         </div>
 
-        {state === "idle" && <JoinDialog onJoin={handleJoin} />}
+        {state === "idle" && <JoinDialog onJoinAction={handleJoin} />}
 
         {state === "lobby" && (
           <RaceLobby participants={lobbyParticipants} slots={3} currentParticipantId={participantId} />
         )}
 
         {state === "countdown" && startAt && (
-          <TrafficLight startAt={startAt} onGo={handleGo} />
+          <TrafficLight startAt={startAt} onGoAction={handleGo} />
         )}
 
         {state === "racing" && (
@@ -1015,7 +1015,7 @@ export function RaceInterface({
               <RaceTimer
                 durationSeconds={durationSeconds}
                 startAt={startAt}
-                onTimeExpired={handleTimeExpired}
+                onTimeExpiredAction={handleTimeExpired}
               />
             )}
             <ProgressPanel
