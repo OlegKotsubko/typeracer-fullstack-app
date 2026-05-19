@@ -16,13 +16,13 @@ export async function RacesSection() {
         .select({ count: count() })
         .from(participants)
         .where(eq(participants.raceId, race.id))
-      const id = race.id.slice(0, 8).toUpperCase()
+      const displayId = race.id.slice(0, 8).toUpperCase()
       const wordCount = race.text.split(/\s+/).filter(Boolean).length
       const tagTone = i % 3 === 1 ? "amber" : i % 3 === 2 ? "pink" : ""
       const participantCount = result?.count ?? 0
       return {
         ...race,
-        id,
+        displayId,
         wordCount,
         tagTone,
         participantCount,
@@ -66,7 +66,7 @@ export async function RacesSection() {
                   className="race-card">
                   <div className="rc-top">
                     <span>
-                      {race.id}
+                      {race.displayId}
                       {' '}
                       {"// Circuit"}
                     </span>
