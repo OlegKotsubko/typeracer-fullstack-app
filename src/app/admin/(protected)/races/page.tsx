@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -13,6 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { fetchApi } from "@/lib/api-client"
+import { queryKeys } from "@/lib/query-keys"
 
 type Race = {
   id: string;
@@ -23,35 +26,32 @@ type Race = {
 };
 
 export default function AdminRacesPage() {
-  const [races, setRaces] = useState<Race[]>([])
+  const queryClient = useQueryClient()
   const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState("")
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const res = await fetch("/api/v1/races")
-      if (cancelled) return
-      if (res.ok) {
-        const { data } = await res.json()
-        setRaces(data)
-      }
-      setLoading(false)
-    })()
-    return () => { cancelled = true }
-  }, [])
+  const { data: races = [], isLoading } = useQuery({
+    queryKey: queryKeys.races.list(),
+    queryFn: () => fetchApi<Race[]>("/api/v1/races"),
+  })
 
-  async function handleDelete() {
-    if (!deleteId) return
-    const res = await fetch(`/api/v1/races/${deleteId}`, { method: "DELETE" })
-    if (res.ok) {
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) =>
+      fetchApi<{ id: string }>(`/api/v1/races/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.races.all() })
       toast.success("Race deleted")
-      setRaces(races.filter((r) => r.id !== deleteId))
-    } else {
+      setDeleteId(null)
+    },
+    onError: () => {
       toast.error("Failed to delete race")
-    }
-    setDeleteId(null)
+      setDeleteId(null)
+    },
+  })
+
+  function handleDelete() {
+    if (!deleteId) return
+    deleteMutation.mutate(deleteId)
   }
 
   const filtered = useMemo(() => {
@@ -89,7 +89,7 @@ export default function AdminRacesPage() {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <p style={{ color: "var(--fg-dim)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 11 }}>
           {"// Loading races..."}
         </p>
@@ -187,7 +187,8 @@ export default function AdminRacesPage() {
               Cancel
             </Button>
             <Button variant="destructive"
-              onClick={handleDelete}>
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}>
               Delete
             </Button>
           </DialogFooter>

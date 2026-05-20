@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +19,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { fetchApi } from "@/lib/api-client"
+import { queryKeys } from "@/lib/query-keys"
 
 type Race = {
   id: string;
@@ -39,27 +41,17 @@ type Participant = {
 
 export default function AdminRaceMonitorPage() {
   const params = useParams()
-  const [race, setRace] = useState<Race | null>(null)
-  const [participants, setParticipants] = useState<Participant[]>([])
+  const id = params.id as string
 
-  useEffect(() => {
-    fetch(`/api/v1/races/${params.id}`)
-      .then((res) => res.json())
-      .then(({ data }) => setRace(data))
-  }, [params.id])
+  const { data: race } = useQuery({
+    queryKey: queryKeys.races.detail(id),
+    queryFn: () => fetchApi<Race>(`/api/v1/races/${id}`),
+  })
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const res = await fetch(`/api/v1/races/${params.id}/participants`)
-      if (cancelled) return
-      if (res.ok) {
-        const { data } = await res.json()
-        setParticipants(data)
-      }
-    })()
-    return () => { cancelled = true }
-  }, [params.id])
+  const { data: participants = [] } = useQuery({
+    queryKey: queryKeys.participants.byRace(id),
+    queryFn: () => fetchApi<Participant[]>(`/api/v1/races/${id}/participants`),
+  })
 
   if (!race) {
     return <p className="text-muted-foreground">

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -17,42 +18,49 @@ import {
 } from "@/components/ui/select"
 import { TimePicker } from "@/components/ui/time-picker"
 import { minutesSecondsToSeconds } from "@/lib/time-utils"
+import { fetchApi, ApiError } from "@/lib/api-client"
+import { queryKeys } from "@/lib/query-keys"
+
+type Race = {
+  id: string;
+  title: string;
+  status: string;
+};
 
 export default function CreateRacePage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [status, setStatus] = useState("draft")
   const [durationMinutes, setDurationMinutes] = useState(0)
   const [durationSeconds, setDurationSeconds] = useState(0)
-  const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const createMutation = useMutation({
+    mutationFn: (payload: { title: string; text: string; status: string; durationSeconds: number }) =>
+      fetchApi<Race>("/api/v1/races", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.races.all() })
+      toast.success("Race created")
+      router.push("/admin/races")
+    },
+    onError: (err) => {
+      toast.error(err instanceof ApiError ? err.message : "Failed to create race")
+    },
+  })
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-
     if (durationMinutes === 0 && durationSeconds === 0) {
       toast.error("Duration must be greater than 0")
       return
     }
-
-    setLoading(true)
-
     const totalSeconds = minutesSecondsToSeconds(durationMinutes, durationSeconds)
-
-    const res = await fetch("/api/v1/races", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, text, status, durationSeconds: totalSeconds }),
-    })
-
-    if (res.ok) {
-      toast.success("Race created")
-      router.push("/admin/races")
-    } else {
-      const data = await res.json()
-      toast.error(data.error?.message ?? "Failed to create race")
-    }
-    setLoading(false)
+    createMutation.mutate({ title, text, status, durationSeconds: totalSeconds })
   }
 
   return (
@@ -130,9 +138,9 @@ export default function CreateRacePage() {
           </div>
           <div className="form-actions">
             <Button type="submit"
-              disabled={loading}
+              disabled={createMutation.isPending}
               size="lg">
-              {loading ? "Creating..." : "Create Race →"}
+              {createMutation.isPending ? "Creating..." : "Create Race →"}
             </Button>
           </div>
         </form>

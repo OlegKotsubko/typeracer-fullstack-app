@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -14,6 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { fetchApi, ApiError } from "@/lib/api-client"
+import { queryKeys } from "@/lib/query-keys"
 
 type ApiKey = {
   id: string;
@@ -24,64 +27,60 @@ type ApiKey = {
   createdAt: string;
 };
 
+type CreatedKey = ApiKey & { token: string };
+
 export default function AdminApiKeysPage() {
-  const [keys, setKeys] = useState<ApiKey[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
   const [name, setName] = useState("")
-  const [creating, setCreating] = useState(false)
   const [revealToken, setRevealToken] = useState<string | null>(null)
   const [revokeId, setRevokeId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const res = await fetch("/api/v1/me/api-keys")
-      if (cancelled) return
-      if (res.ok) {
-        const { data } = await res.json()
-        setKeys(data)
-      }
-      setLoading(false)
-    })()
-    return () => { cancelled = true }
-  }, [])
+  const { data: keys = [], isLoading } = useQuery({
+    queryKey: queryKeys.apiKeys.list(),
+    queryFn: () => fetchApi<ApiKey[]>("/api/v1/me/api-keys"),
+  })
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault()
-    if (!name.trim()) return
-    setCreating(true)
-    const res = await fetch("/api/v1/me/api-keys", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim() }),
-    })
-    if (res.ok) {
-      const { data } = await res.json()
-      setKeys((prev) => [{
-        id: data.id, name: data.name, prefix: data.prefix,
-        lastUsedAt: null, revokedAt: null, createdAt: data.createdAt,
-      }, ...prev])
+  const createMutation = useMutation({
+    mutationFn: (keyName: string) =>
+      fetchApi<CreatedKey>("/api/v1/me/api-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: keyName }),
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.apiKeys.all() })
       setRevealToken(data.token)
       setName("")
-    } else {
-      const data = await res.json()
-      toast.error(data.error?.message ?? "Failed to create API key")
-    }
-    setCreating(false)
+    },
+    onError: (err) => {
+      toast.error(err instanceof ApiError ? err.message : "Failed to create API key")
+    },
+  })
+
+  const revokeMutation = useMutation({
+    mutationFn: (id: string) =>
+      fetchApi<{ id: string }>(`/api/v1/me/api-keys/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.apiKeys.all() })
+      toast.success("API key revoked")
+      setRevokeId(null)
+    },
+    onError: () => {
+      toast.error("Failed to revoke API key")
+      setRevokeId(null)
+    },
+  })
+
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name.trim()) return
+    createMutation.mutate(name.trim())
   }
 
-  async function handleRevoke() {
+  function handleRevoke() {
     if (!revokeId) return
-    const res = await fetch(`/api/v1/me/api-keys/${revokeId}`, { method: "DELETE" })
-    if (res.ok) {
-      const now = new Date().toISOString()
-      setKeys((prev) => prev.map((k) => k.id === revokeId ? { ...k, revokedAt: now } : k))
-      toast.success("API key revoked")
-    } else {
-      toast.error("Failed to revoke API key")
-    }
-    setRevokeId(null)
+    revokeMutation.mutate(revokeId)
   }
 
   function handleCopy() {
@@ -120,9 +119,9 @@ export default function AdminApiKeysPage() {
           </div>
           <div className="form-actions">
             <Button type="submit"
-              disabled={creating}
+              disabled={createMutation.isPending}
               size="lg">
-              {creating ? "Generating..." : "Generate →"}
+              {createMutation.isPending ? "Generating..." : "Generate →"}
             </Button>
           </div>
         </form>
@@ -140,7 +139,7 @@ export default function AdminApiKeysPage() {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <p style={{ color: "var(--fg-dim)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: 11 }}>
           {"// Loading keys..."}
         </p>
@@ -266,7 +265,8 @@ export default function AdminApiKeysPage() {
               Cancel
             </Button>
             <Button variant="destructive"
-              onClick={handleRevoke}>
+              onClick={handleRevoke}
+              disabled={revokeMutation.isPending}>
               Revoke
             </Button>
           </DialogFooter>
